@@ -1,1 +1,7 @@
 com/battleship/Application.class
+com/battleship/model/Shot.class
+com/battleship/model/Cell.class
+com/battleship/model/Board.class
+com/battleship/model/Ship.class
+com/battleship/model/Game.class
+com/battleship/model/Player.class
