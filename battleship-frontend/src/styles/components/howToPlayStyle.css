@@ -1,0 +1,87 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    z-index: 1000;
+}
+
+.overlay-content {
+    position: relative;
+    background-color: var(--steel-blue);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 70vw;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.close-button {
+    position: absolute;
+    background-color: var(--gold) !important;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &::hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+h2 {
+    text-align: center;
+    color: var(--gold);
+}
+
+h3 {
+    text-decoration: underline;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+ol {
+    margin-left: 0;
+    padding-left: 1.5rem;
+
+    li {
+        list-style: decimal !important;
+        margin-left: 0;
+        padding-left: 1rem;
+    }
+
+}
+
+
+
+@media (prefers-color-scheme: light) {
+    .overlay-content {
+        background-color: #ffffff;
+        color: #213547;
+    }
+
+    .close-button {
+        color: #213547;
+    }
+}

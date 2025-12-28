@@ -28,11 +28,11 @@ h1 {
   line-height: 1.1;
 }
 h2 {
-  font-size: 2.4rem;
+  font-size: 3.2rem;
   line-height: 1.1;
 }
 h3 {
-  font-size: 1.8rem;
+  font-size: 2.4rem;
   line-height: 1.1;
 }
 h4 {
@@ -42,6 +42,11 @@ h4 {
 h5 {
   font-size: 1.2rem;
   line-height: 1.1;
+}
+p {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
 }
 a {
   font-weight: 500;
@@ -53,9 +58,10 @@ a {
 }
 ul {
   padding: 0;
-  li {
-    list-style: none;
-  }
+}
+li {
+  list-style: none;
+  font-size: 1.4rem;
 }
 
 button {
