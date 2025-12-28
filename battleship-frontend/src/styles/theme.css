@@ -1,0 +1,38 @@
+:root {
+    /* Base */
+    --navy-dark: #0a1628;
+    --navy-blue: #788799;
+    --ocean-blue: #2c3e50;
+    --steel-blue: #34495e;
+
+    /* Accents */
+    --radar-green: #00ff41;
+    --warning-orange: #ff6b35;
+    --danger-red: #e63946;
+    --gold: #ffb703;
+
+    /* Neutrals */
+    --white: #f8f9fa;
+    --light-gray: #adb5bd;
+    --mid-gray: #6c757d;
+    --dark-gray: #343a40;
+
+    /* Game specific */
+    --water: #2e86ab;
+    --water-hover: #3a9fbf;
+    --ship-gray: #495057;
+    --hit: #e63946;
+    --miss: #dee2e6;
+    --sunk: #6c757d;
+
+    /* Typography */
+    --font-primary: "Bebas Neue", sans-serif;
+
+    /* Spacing */
+    --cell-size: 40px;
+    --border-radius: 4px;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: var(--navy-dark);
+}
