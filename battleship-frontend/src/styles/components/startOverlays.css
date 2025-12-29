@@ -24,7 +24,7 @@
 
 .overlay-content {
     position: relative;
-    background-color: var(--steel-blue);
+    background-color: var(--background-secondary);
     border-radius: 12px;
     padding: 2rem;
     max-width: 70vw;
@@ -32,6 +32,7 @@
     overflow-y: auto;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     animation: scaleIn 0.3s ease-out;
+    color: var(--text-primary);
 
     .close-button {
         position: absolute;
@@ -99,7 +100,61 @@
 .settings {
     h2 {
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         color: var(--danger-red) !important;
+    }
+
+    .settings-group {
+        margin-bottom: 2rem;
+
+        h3 {
+            color: var(--danger-red);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 0.5rem;
+        }
+    }
+
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        select {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: var(--ocean-blue);
+            color: var(--text-primary);
+            font-family: inherit;
+            cursor: pointer;
+            min-width: 150px;
+
+            &:focus {
+                outline: 2px solid var(--danger-red);
+            }
+
+            option {
+                background-color: var(--steel-blue);
+                color: var(--text-primary);
+            }
+        }
+
+        input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+            accent-color: var(--danger-red);
+        }
     }
 }

@@ -32,7 +32,53 @@
     --cell-size: 40px;
     --border-radius: 4px;
 
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: var(--navy-dark);
+    /* Theme colors - Dark by default */
+    --background-primary: #0a1628;
+    --background-secondary: #34495e;
+    --text-primary: rgba(255, 255, 255, 0.87);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+
+    color-scheme: dark;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+/* Light Mode */
+:root.light-mode {
+    --navy-dark: #d4e3f0;
+    --navy-blue: #4a5c6e;
+    --ocean-blue: #6fade4;
+    --steel-blue: #7a9eb8;
+
+    --background-primary: #a7dff7;
+    --background-secondary: rgb(198, 235, 255);
+    --text-primary: #1a2332;
+    --text-secondary: #4a5c6e;
+
+    color-scheme: light;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+/* Dark Mode - explicit */
+:root.dark-mode {
+    --navy-dark: #0a1628;
+    --navy-blue: #788799;
+    --ocean-blue: #2c3e50;
+    --steel-blue: #34495e;
+
+    --background-primary: #0a1628;
+    --background-secondary: #34495e;
+    --text-primary: rgba(255, 255, 255, 0.87);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+
+    color-scheme: dark;
+    color: var(--text-primary);
+    background-color: var(--background-primary);
+}
+
+/* Apply theme colors to body */
+body {
+    background-color: var(--background-primary);
+    color: var(--text-primary);
 }
