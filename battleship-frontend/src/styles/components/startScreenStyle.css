@@ -5,3 +5,24 @@
     margin: 0 auto;
     gap: 1rem;
 }
+.start-button {
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: var(--radar-green);
+        border: var(--radar-green);
+    }
+}
+.how-to-play {
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: var(--gold);
+        border: var(--gold);
+    }
+}
+.settings-button {
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: var(--danger-red);
+        border: var(--danger-red);
+    }
+}

@@ -1,8 +1,8 @@
-import '../styles/components/howToPlayStyle.css';
+import '../styles/components/startOverlays.css';
 
 export default function HowToPlayScreen({ onClose }) {
     return (
-        <div className="overlay" onClick={onClose}>
+        <div className="how-to-play overlay" onClick={onClose}>
             <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
                 <button className="close-button" onClick={onClose}>×</button>
                 <section className="how-to-play-screen">
