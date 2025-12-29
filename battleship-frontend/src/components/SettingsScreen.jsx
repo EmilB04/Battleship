@@ -35,6 +35,12 @@ export default function SettingsScreen({ onClose }) {
 
     useEffect(() => {
         localStorage.setItem('animations', animations);
+        
+        if (animations) {
+            document.documentElement.classList.remove('no-animations');
+        } else {
+            document.documentElement.classList.add('no-animations');
+        }
     }, [animations]);
 
     return (

@@ -11,7 +11,9 @@ function App() {
   // Initialize theme on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'system';
+    const animationsEnabled = localStorage.getItem('animations') !== 'false';
 
+    // Apply theme
     if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark-mode');
       document.documentElement.classList.remove('light-mode');
@@ -34,6 +36,13 @@ function App() {
 
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    // Apply animations setting
+    if (!animationsEnabled) {
+      document.documentElement.classList.add('no-animations');
+    } else {
+      document.documentElement.classList.remove('no-animations');
     }
   }, []);
 

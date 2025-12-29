@@ -22,6 +22,31 @@
     }
 }
 
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Disable animations when setting is off */
+:root.no-animations .overlay {
+    animation: none !important;
+}
+
+:root.no-animations .overlay-content {
+    animation: none !important;
+}
+
+:root.no-animations * {
+    transition: none !important;
+    animation: none !important;
+}
+
 .overlay-content {
     position: relative;
     background-color: var(--background-secondary);
@@ -60,17 +85,6 @@
         &:focus {
             outline: none;
         }
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
     }
 }
 
