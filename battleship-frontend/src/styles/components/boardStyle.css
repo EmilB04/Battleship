@@ -60,6 +60,49 @@
     background-color: var(--water-hover);
 }
 
+.board-cell.occupied {
+    cursor: pointer;
+    position: relative;
+}
+
+.board-cell.occupied::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--warning-orange);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.board-cell.occupied:hover::before {
+    opacity: 0.8;
+}
+
+.board-cell.occupied:hover {
+    box-shadow: inset 0 0 8px rgba(255, 107, 53, 0.3);
+}
+
+.board-cell.hover-preview {
+    background-color: rgba(0, 255, 65, 0.3);
+    border: 2px solid var(--radar-green);
+}
+
+.board-cell .ship-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    user-select: none;
+}
+
 /* Adjust cell size based on grid size */
 .game-board[style*="--grid-size: 8"] .board-cell {
     width: 50px;

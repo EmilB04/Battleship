@@ -1,17 +1,20 @@
-import { useState } from 'react';
 import '../styles/components/shipsStyle.css';
 
-export default function Ships() {
+export default function Ships({ selectedShip, setSelectedShip, orientation, setOrientation, placedShips }) {
     const ships = [
         { id: 1, name: 'Carrier', label: 'CA',  length: 5, color: '#e63946' },
         { id: 2, name: 'Battleship', label: 'BS', length: 4, color: '#ff6b35' },
         { id: 3, name: 'Cruiser', label: 'CR', length: 3, color: '#ffb703' },
         { id: 4, name: 'Submarine', label: 'SM', length: 3, color: '#00ff41' },
-        { id: 5, name: 'Destroyer', label: 'DE', length: 2, color: '#2e86ab' }
+        { id: 5, name: 'Destroyer', label: 'DE', length: 2, color: '#005275ff' }
     ];
 
-    const [selectedShip, setSelectedShip] = useState(null);
-    const [orientation, setOrientation] = useState('horizontal');
+    const isShipPlaced = (shipId) => placedShips.some(ship => ship.id === shipId);
+
+    const handleDragStart = (e, ship) => {
+        setSelectedShip(ship);
+        e.dataTransfer.effectAllowed = 'move';
+    };
 
     return (
         <section className="ships-container">
@@ -28,8 +31,10 @@ export default function Ships() {
                 {ships.map(ship => (
                     <div 
                         key={ship.id}
-                        className={`ship-item ${selectedShip?.id === ship.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedShip(ship)}
+                        className={`ship-item ${selectedShip?.id === ship.id ? 'selected' : ''} ${isShipPlaced(ship.id) ? 'placed' : ''}`}
+                        onClick={() => !isShipPlaced(ship.id) && setSelectedShip(ship)}
+                        draggable={!isShipPlaced(ship.id)}
+                        onDragStart={(e) => handleDragStart(e, ship)}
                     >
                         <div className="ship-name">{ship.name}</div>
                         <div className={`ship-preview ${orientation}`}>

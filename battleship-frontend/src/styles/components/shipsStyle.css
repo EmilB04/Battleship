@@ -66,6 +66,18 @@
     box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
+.ship-item.placed {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--dark-gray);
+    border-color: var(--mid-gray);
+}
+
+.ship-item.placed:hover {
+    transform: none;
+    border-color: var(--mid-gray);
+}
+
 .ship-name {
     font-weight: bold;
     color: var(--white);
