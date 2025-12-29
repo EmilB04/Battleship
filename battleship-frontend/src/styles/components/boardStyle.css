@@ -1,0 +1,138 @@
+.board-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.game-board {
+    border-collapse: separate;
+    border-spacing: 1.5px;
+    border: 2px solid var(--ocean-blue);
+    background-color: var(--ocean-blue);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 2px;
+}
+
+.board-label {
+    background-color: var(--steel-blue);
+    color: var(--white);
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--ocean-blue);
+}
+
+.board-label.corner {
+    background-color: var(--background-secondary);
+    border: none;
+    color: var(--danger-red);
+    font-size: 1rem;
+}
+
+.board-label.column-label,
+.board-label.row-label {
+    min-width: var(--cell-size);
+    min-height: var(--cell-size);
+}
+
+.board-label.column-label {
+    padding: 0.3rem 0.5rem;
+}
+
+.board-label.row-label {
+    padding: 0.5rem 0.3rem;
+}
+
+
+.board-cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 1px solid var(--ocean-blue);
+    background-color: var(--water);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.board-cell:hover {
+    background-color: var(--water-hover);
+}
+
+/* Adjust cell size based on grid size */
+.game-board[style*="--grid-size: 8"] .board-cell {
+    width: 50px;
+    height: 50px;
+}
+
+.game-board[style*="--grid-size: 10"] .board-cell {
+    width: 40px;
+    height: 40px;
+}
+
+.game-board[style*="--grid-size: 12"] .board-cell {
+    width: 35px;
+    height: 35px;
+}
+
+/* Cell states */
+.board-cell.ship {
+    background-color: var(--ship-gray);
+}
+
+.board-cell.hit {
+    background-color: var(--hit);
+}
+
+.board-cell.miss {
+    background-color: var(--miss);
+}
+
+.board-cell.miss::after {
+    content: '•';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--mid-gray);
+    font-size: 1.5rem;
+}
+
+.board-cell.hit::after {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.board-cell.sunk {
+    background-color: var(--sunk);
+}
+
+/* Disable animations if setting is off */
+:root.no-animations .board-cell {
+    transition: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .game-board[style*="--grid-size: 8"] .board-cell {
+        width: 40px;
+        height: 40px;
+    }
+
+    .game-board[style*="--grid-size: 10"] .board-cell {
+        width: 32px;
+        height: 32px;
+    }
+
+    .game-board[style*="--grid-size: 12"] .board-cell {
+        width: 28px;
+        height: 28px;
+    }
+}

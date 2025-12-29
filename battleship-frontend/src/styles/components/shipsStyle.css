@@ -1,0 +1,142 @@
+.ships-container {
+    padding: 1.5rem;
+    background-color: var(--background-secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ships-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.ships-header h3 {
+    margin: 0;
+    color: var(--gold);
+    font-size: 1.5rem;
+}
+
+.orientation-button {
+    padding: 0.5rem 1rem;
+    background-color: var(--ocean-blue);
+    color: var(--white);
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.orientation-button:hover {
+    background-color: var(--steel-blue);
+    border-color: var(--warning-orange);
+}
+
+.ships-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ship-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: var(--steel-blue);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ship-item:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ship-item.selected {
+    border-color: var(--radar-green);
+    background-color: var(--ocean-blue);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.ship-name {
+    font-weight: bold;
+    color: var(--white);
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.ship-preview {
+    display: flex;
+    gap: 2px;
+}
+
+.ship-preview.horizontal {
+    flex-direction: row;
+}
+
+.ship-preview.vertical {
+    flex-direction: column;
+}
+
+.ship-cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.ship-label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+}
+
+.ship-length {
+    font-size: 0.9rem;
+    color: var(--light-gray);
+}
+
+/* Disable animations if setting is off */
+:root.no-animations .ship-item {
+    transition: none;
+}
+
+:root.no-animations .orientation-button {
+    transition: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ships-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ship-item {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .ship-preview.vertical {
+        flex-direction: row;
+    }
+
+    .ship-cell {
+        width: 25px;
+        height: 25px;
+    }
+}

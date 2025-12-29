@@ -27,6 +27,8 @@ export default function SettingsScreen({ onClose }) {
 
     useEffect(() => {
         localStorage.setItem('gridSize', gridSize);
+        // Trigger a custom event to notify components of the change
+        window.dispatchEvent(new Event('gridSizeChanged'));
     }, [gridSize]);
 
     useEffect(() => {
