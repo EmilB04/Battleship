@@ -21,6 +21,7 @@ export default function GameScreen() {
                         orientation={orientation}
                         setOrientation={setOrientation}
                         placedShips={placedShips}
+                        onFinishSetup={() => setSetup(false)}
                     />
                     <Board 
                         selectedShip={selectedShip}
@@ -29,7 +30,6 @@ export default function GameScreen() {
                         placedShips={placedShips}
                         setPlacedShips={setPlacedShips}
                     />
-                    <button className="start-button" onClick={() => setSetup(false)}>Finish Setup</button>
                 </> 
                 : 
                 <>

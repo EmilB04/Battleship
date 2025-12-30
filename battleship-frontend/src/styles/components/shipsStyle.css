@@ -18,6 +18,12 @@
     font-size: 1.5rem;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
 .orientation-button {
     padding: 0.5rem 1rem;
     background-color: var(--ocean-blue);
@@ -32,6 +38,32 @@
 .orientation-button:hover {
     background-color: var(--steel-blue);
     border-color: var(--warning-orange);
+}
+
+.finish-setup-button {
+    padding: 0.5rem 1.5rem;
+    background-color: var(--radar-green);
+    color: var(--dark-gray);
+    border: 2px solid var(--radar-green);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.finish-setup-button:hover:not(:disabled) {
+    background-color: #00ff41;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 255, 65, 0.4);
+}
+
+.finish-setup-button:disabled {
+    background-color: var(--mid-gray);
+    color: var(--light-gray);
+    border-color: var(--mid-gray);
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .ships-row {
@@ -128,6 +160,10 @@
 }
 
 :root.no-animations .orientation-button {
+    transition: none;
+}
+
+:root.no-animations .finish-setup-button {
     transition: none;
 }
 
