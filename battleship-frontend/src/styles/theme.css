@@ -25,6 +25,13 @@
     --miss: #dee2e6;
     --sunk: #6c757d;
 
+    /* Ship colors */
+    --carrier: #7e7e7e;
+    --battleship: #e63946;
+    --cruiser: #ffb703;
+    --submarine: #356f44;
+    --destroyer: #005275ff;
+
     /* Typography */
     --font-primary: "Bebas Neue", sans-serif;
 

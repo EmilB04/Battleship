@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Board from './Board';
 import Ships from './Ships';
 
-export default function GameScreen() {
+export default function GameScreen({ GoBack }) {
     const [setup, setSetup] = useState(true);
     const [selectedShip, setSelectedShip] = useState(null);
     const [orientation, setOrientation] = useState('horizontal');
@@ -11,6 +11,7 @@ export default function GameScreen() {
     
     return (
         <section className="game-screen">
+            <button style={{position: "absolute", top: "10px", left: "10px"}} onClick={GoBack}>← Back to Menu</button>
             {setup ? 
                 <>
                     <h2>Place Your Ships</h2>

@@ -48,7 +48,7 @@ function App() {
 
   return (
     <>
-      {gameStarted ? <GameScreen /> : <StartScreen StartGame={() => setGameStarted(true)} />}
+      {gameStarted ? <GameScreen GoBack={() => setGameStarted(false)} /> : <StartScreen StartGame={() => setGameStarted(true)} />}
       <Footer />
     </>
   )
