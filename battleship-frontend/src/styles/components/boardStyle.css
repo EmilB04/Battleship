@@ -20,8 +20,10 @@
     font-weight: bold;
     text-align: center;
     font-size: 1rem;
-    padding: 0.5rem;
+    padding: 0;
     border: 1px solid var(--ocean-blue);
+    width: clamp(25px, 4vw, 50px);
+    height: clamp(25px, 4vw, 50px);
 }
 
 .board-label.corner {
@@ -33,22 +35,22 @@
 
 .board-label.column-label,
 .board-label.row-label {
-    min-width: var(--cell-size);
-    min-height: var(--cell-size);
+    min-width: clamp(25px, 4vw, 50px);
+    min-height: clamp(25px, 4vw, 50px);
 }
 
 .board-label.column-label {
-    padding: 0.3rem 0.5rem;
+    padding: clamp(0.2rem, 0.5vw, 0.5rem);
 }
 
 .board-label.row-label {
-    padding: 0.5rem 0.3rem;
+    padding: clamp(0.2rem, 0.5vw, 0.5rem);
 }
 
 
 .board-cell {
-    width: var(--cell-size);
-    height: var(--cell-size);
+    width: clamp(25px, 4vw, 50px);
+    height: clamp(25px, 4vw, 50px);
     border: 1px solid var(--ocean-blue);
     background-color: var(--water);
     cursor: pointer;
@@ -96,7 +98,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 0.7rem;
+    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
     font-weight: bold;
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
@@ -164,18 +166,45 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .game-board[style*="--grid-size: 8"] .board-cell {
-        width: 40px;
-        height: 40px;
+    .board-cell {
+        width: clamp(20px, 6vw, 40px);
+        height: clamp(20px, 6vw, 40px);
     }
 
-    .game-board[style*="--grid-size: 10"] .board-cell {
-        width: 32px;
-        height: 32px;
+    .board-label.column-label,
+    .board-label.row-label {
+        min-width: clamp(20px, 6vw, 40px);
+        min-height: clamp(20px, 6vw, 40px);
+        font-size: clamp(0.7rem, 2vw, 1rem);
     }
 
-    .game-board[style*="--grid-size: 12"] .board-cell {
-        width: 28px;
-        height: 28px;
+    .board-cell .ship-label {
+        font-size: clamp(0.4rem, 2vw, 0.6rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .board-screen {
+        padding: 0.5rem;
+    }
+
+    .board-cell {
+        width: clamp(18px, 7vw, 35px);
+        height: clamp(18px, 7vw, 35px);
+    }
+
+    .board-label.column-label,
+    .board-label.row-label {
+        min-width: clamp(18px, 7vw, 35px);
+        min-height: clamp(18px, 7vw, 35px);
+        font-size: clamp(0.6rem, 2.5vw, 0.9rem);
+    }
+
+    .board-cell .ship-label {
+        font-size: clamp(0.35rem, 2.5vw, 0.55rem);
+    }
+
+    .game-board {
+        border-spacing: 1px;
     }
 }

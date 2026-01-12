@@ -50,12 +50,13 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
                         key={ship.id}
                         className={`ship-item ${selectedShip?.id === ship.id ? 'selected' : ''} ${isShipPlaced(ship.id) ? 'placed' : ''}`}
                         onClick={() => !isShipPlaced(ship.id) && setSelectedShip(ship)}
+                        style={{ cursor: isShipPlaced(ship.id) ? 'not-allowed' : 'pointer' }}
                     >
                         <div className="ship-name">{ship.name}</div>
                         <div 
                             className={`ship-preview ${orientation}`}
                             draggable={!isShipPlaced(ship.id)}
-                            onDragStart={(e) => handleDragStart(e, ship)}
+                            onDragStart={(e) => !isShipPlaced(ship.id) && handleDragStart(e, ship)}
                         >
                             {[...Array(ship.length)].map((_, index) => (
                                 <div 

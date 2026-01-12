@@ -22,7 +22,7 @@
                 min-width: 120px;
                 border-radius: var(--border-radius);
                 cursor: pointer;
-                transition: border-color 0.4s ease;
+                transition: border-color 0.4s ease, background-color 0.3s ease;
                 outline: none;
 
                 &:hover {
@@ -44,6 +44,11 @@
                     border-color: var(--gold) !important;
                 }
             }
+            #finish-setup-button:not(:disabled) {
+                background-color: var(--radar-green);
+                color: var(--navy-dark);
+                font-weight: bold;
+            }
         }
     }
     #ships-row {
@@ -60,7 +65,12 @@
             padding: 0rem;
             border: 2px solid transparent;
             border-radius: var(--border-radius);
-            transition: border-color 0.4s ease;
+            transition: border-color 0.4s ease, opacity 0.3s ease;
+            
+            &.placed {
+                opacity: 0.4;
+                pointer-events: none;
+            }
             .ship-name {
                 color: var(--text-primary);
                 text-align: center;
