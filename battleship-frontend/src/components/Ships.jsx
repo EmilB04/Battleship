@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
 import '../styles/components/shipsStyle.css';
 
-export default function Ships({ selectedShip, setSelectedShip, orientation, setOrientation, placedShips, onFinishSetup }) {
+export default function Ships({ selectedShip, setSelectedShip, orientation, setOrientation, placedShips }) {
     const ships = [
         { id: 1, name: 'Carrier', label: 'CA',  length: 5, color: 'var(--carrier)' },
         { id: 2, name: 'Battleship', label: 'BS', length: 4, color: 'var(--battleship)' },
@@ -11,39 +10,15 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
     ];
 
     const isShipPlaced = (shipId) => placedShips.some(ship => ship.id === shipId);
-    const allShipsPlaced = placedShips.length === ships.length;
 
     const handleDragStart = (e, ship) => {
         setSelectedShip(ship);
         e.dataTransfer.effectAllowed = 'move';
     };
 
-    const handleFinishSetup = () => {
-        if (allShipsPlaced && onFinishSetup) {
-            onFinishSetup();
-        }
-    };
-
     return (
         <section id="ships-container">
-            <div id="ships-header">
-                <h3>Your Fleet</h3>
-                <div id="header-buttons">
-                    <button 
-                        id="orientation-button"
-                        onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
-                    >
-                        Rotate: {orientation === 'horizontal' ? '→' : '↓'}
-                    </button>
-                    <button 
-                        id="finish-setup-button"
-                        onClick={handleFinishSetup}
-                        disabled={!allShipsPlaced}
-                    >
-                        Finish Setup
-                    </button>
-                </div>
-            </div>
+            
             <div id="ships-row">
                 {ships.map(ship => (
                     <div 
@@ -72,6 +47,14 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
                     </div>
                 ))}
             </div>
+                <div id="header-buttons">
+                    <button 
+                        id="orientation-button"
+                        onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
+                    >
+                        Rotate: {orientation === 'horizontal' ? '→' : '↓'}
+                    </button>
+                </div>
         </section>
     );
 }

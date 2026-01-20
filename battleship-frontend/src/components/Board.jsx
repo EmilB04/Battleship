@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import '../styles/components/boardStyle.css';
 
-export default function Board({ selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips }) {
+export default function Board({ selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
     const BOARD_SIZE = 10;
     const [hoveredCells, setHoveredCells] = useState([]);
+
+    // Calculate if all ships are placed (5 ships total)
+    const TOTAL_SHIPS = 5;
+    const allShipsPlaced = placedShips.length === TOTAL_SHIPS;
+
+    const handleStartGame = () => {
+        if (allShipsPlaced && onFinishSetup) {
+            onFinishSetup();
+        }
+    };
 
     // Generate column labels (A-J)
     const columnLabels = Array.from({ length: BOARD_SIZE }, (_, i) => String.fromCharCode(65 + i));
@@ -194,6 +204,16 @@ export default function Board({ selectedShip, setSelectedShip, orientation, plac
                     ))}
                 </tbody>
             </table>
+            
+            {/* Start Game button */}
+            <button 
+                id="start-game-button"
+                onClick={handleStartGame}
+                disabled={!allShipsPlaced}
+                title={!allShipsPlaced ? `Place all ${TOTAL_SHIPS} ships to start (${placedShips.length}/${TOTAL_SHIPS})` : 'Start the game!'}
+            >
+                {allShipsPlaced ? 'Start Game' : `Place Ships (${placedShips.length}/${TOTAL_SHIPS})`}
+            </button>
         </section>
     );
 }

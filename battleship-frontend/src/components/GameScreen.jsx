@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Board from './Board';
 import Ships from './Ships';
+import '../styles/components/gameScreenStyle.css';
 
 export default function GameScreen({ GoBack }) {
     const [setup, setSetup] = useState(true);
@@ -22,7 +23,6 @@ export default function GameScreen({ GoBack }) {
                         orientation={orientation}
                         setOrientation={setOrientation}
                         placedShips={placedShips}
-                        onFinishSetup={() => setSetup(false)}
                     />
                     <Board 
                         selectedShip={selectedShip}
@@ -30,6 +30,7 @@ export default function GameScreen({ GoBack }) {
                         orientation={orientation}
                         placedShips={placedShips}
                         setPlacedShips={setPlacedShips}
+                        onFinishSetup={() => setSetup(false)}
                     />
                 </> 
                 : 

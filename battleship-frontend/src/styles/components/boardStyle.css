@@ -1,8 +1,52 @@
 .board-screen {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
-    padding: 2rem;
+    padding: 1rem;
+}
+
+#start-game-button {
+    background-color: var(--ocean-blue);
+    color: var(--text-primary);
+    border: 2px solid transparent;
+    font-size: 1.3rem;
+    font-weight: bold;
+    padding: 1rem 2rem;
+    min-width: 200px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: border-color 0.4s ease, background-color 0.3s ease;
+    outline: none;
+    margin-top: 1rem;
+}
+
+#start-game-button:not(:disabled) {
+    background-color: var(--radar-green);
+    color: var(--navy-dark);
+}
+
+#start-game-button:hover:not(:disabled) {
+    border-color: var(--gold);
+}
+
+#start-game-button:focus {
+    border-color: var(--radar-green);
+    outline: none;
+}
+
+#start-game-button:disabled {
+    background-color: var(--background-secondary);
+    cursor: not-allowed;
+    border-color: transparent;
+}
+
+#start-game-button:disabled:hover {
+    border-color: var(--warning-orange);
+}
+
+#start-game-button:active:not(:disabled) {
+    border-color: var(--gold) !important;
 }
 
 .game-board {
@@ -19,11 +63,11 @@
     color: var(--white);
     font-weight: bold;
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.85rem;
     padding: 0;
     border: 1px solid var(--ocean-blue);
-    width: clamp(25px, 4vw, 50px);
-    height: clamp(25px, 4vw, 50px);
+    width: clamp(20px, 3vw, 35px);
+    height: clamp(20px, 3vw, 35px);
 }
 
 .board-label.corner {
@@ -33,24 +77,12 @@
     font-size: 1rem;
 }
 
-.board-label.column-label,
-.board-label.row-label {
-    min-width: clamp(25px, 4vw, 50px);
-    min-height: clamp(25px, 4vw, 50px);
-}
 
-.board-label.column-label {
-    padding: clamp(0.2rem, 0.5vw, 0.5rem);
-}
-
-.board-label.row-label {
-    padding: clamp(0.2rem, 0.5vw, 0.5rem);
-}
 
 
 .board-cell {
-    width: clamp(25px, 4vw, 50px);
-    height: clamp(25px, 4vw, 50px);
+    width: clamp(20px, 3vw, 35px);
+    height: clamp(20px, 3vw, 35px);
     border: 1px solid var(--ocean-blue);
     background-color: var(--water);
     cursor: pointer;
@@ -107,18 +139,18 @@
 
 /* Adjust cell size based on grid size */
 .game-board[style*="--grid-size: 8"] .board-cell {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
 }
 
 .game-board[style*="--grid-size: 10"] .board-cell {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
 }
 
 .game-board[style*="--grid-size: 12"] .board-cell {
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
 }
 
 /* Cell states */
@@ -167,15 +199,15 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .board-cell {
-        width: clamp(20px, 6vw, 40px);
-        height: clamp(20px, 6vw, 40px);
+        width: clamp(18px, 5vw, 32px);
+        height: clamp(18px, 5vw, 32px);
     }
 
     .board-label.column-label,
     .board-label.row-label {
-        min-width: clamp(20px, 6vw, 40px);
-        min-height: clamp(20px, 6vw, 40px);
-        font-size: clamp(0.7rem, 2vw, 1rem);
+        min-width: clamp(18px, 5vw, 32px);
+        min-height: clamp(18px, 5vw, 32px);
+        font-size: clamp(0.65rem, 1.8vw, 0.9rem);
     }
 
     .board-cell .ship-label {
@@ -189,15 +221,15 @@
     }
 
     .board-cell {
-        width: clamp(18px, 7vw, 35px);
-        height: clamp(18px, 7vw, 35px);
+        width: clamp(16px, 6vw, 28px);
+        height: clamp(16px, 6vw, 28px);
     }
 
     .board-label.column-label,
     .board-label.row-label {
-        min-width: clamp(18px, 7vw, 35px);
-        min-height: clamp(18px, 7vw, 35px);
-        font-size: clamp(0.6rem, 2.5vw, 0.9rem);
+        min-width: clamp(16px, 6vw, 28px);
+        min-height: clamp(16px, 6vw, 28px);
+        font-size: clamp(0.55rem, 2.2vw, 0.8rem);
     }
 
     .board-cell .ship-label {

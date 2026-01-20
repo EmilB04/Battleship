@@ -3,54 +3,57 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    #ships-header{
-        color: var(--text-primary);
-        h3 {
-            margin: 1rem;
-            color: var(--gold)
-        }
-        #header-buttons {
-            display: flex;
-            flex-direction: row;
-            gap: 1rem;
-            button {
-                background-color: var(--ocean-blue);
-                color: var(--text-primary);
-                border: 2px solid transparent;
-                font-size: 1.2rem;
-                padding: 1rem 1.5rem;
-                min-width: 120px;
-                border-radius: var(--border-radius);
-                cursor: pointer;
-                transition: border-color 0.4s ease, background-color 0.3s ease;
+
+    #header-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin: 0;
+
+        button {
+            background-color: var(--ocean-blue);
+            color: var(--text-primary);
+            border: 2px solid transparent;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            margin: 0;
+            min-width: 120px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: border-color 0.4s ease, background-color 0.3s ease;
+            outline: none;
+
+            &:hover {
+                border-color: var(--gold);
+            }
+
+            &:focus {
+                border-color: var(--radar-green);
                 outline: none;
+            }
+
+            &:disabled {
+                background-color: var(--background-secondary);
+                cursor: not-allowed;
+                border-color: transparent;
 
                 &:hover {
-                    border-color: var(--gold);
-                }
-                &:focus {
-                    border-color: var(--radar-green);
-                    outline: none;
-                }
-                &:disabled {
-                    background-color: var(--background-secondary);
-                    cursor: not-allowed;
-                    border-color: transparent;
-                    &:hover {
-                        border-color: var(--warning-orange);
-                    }
-                }
-                &:active {
-                    border-color: var(--gold) !important;
+                    border-color: var(--warning-orange);
                 }
             }
-            #finish-setup-button:not(:disabled) {
-                background-color: var(--radar-green);
-                color: var(--navy-dark);
-                font-weight: bold;
+
+            &:active {
+                border-color: var(--gold) !important;
             }
         }
+
+        #finish-setup-button:not(:disabled) {
+            background-color: var(--radar-green);
+            color: var(--navy-dark);
+            font-weight: bold;
+        }
     }
+
     #ships-row {
         display: flex;
         flex-direction: row;
@@ -58,24 +61,27 @@
         justify-content: center;
         gap: 1rem;
         width: 100%;
-        > div {
+
+        >div {
             white-space: nowrap;
             cursor: pointer;
-            margin: 1rem;
+            margin: 0rem;
             padding: 0rem;
             border: 2px solid transparent;
             border-radius: var(--border-radius);
             transition: border-color 0.4s ease, opacity 0.3s ease;
-            
+
             &.placed {
                 opacity: 0.4;
                 pointer-events: none;
             }
+
             .ship-name {
                 color: var(--text-primary);
                 text-align: center;
                 margin-bottom: 0.5rem;
             }
+
             .ship-preview {
                 display: flex;
                 flex-direction: row;
@@ -84,17 +90,17 @@
                 justify-content: center;
                 transition: all 0.3s ease;
                 background-color: transparent;
-                
+
                 &.vertical {
                     flex-direction: column;
                 }
-                
+
                 &:active {
                     .ship-cell {
                         opacity: 0.5;
                     }
                 }
-                
+
                 .ship-cell {
                     width: var(--cell-size);
                     height: var(--cell-size);
@@ -106,10 +112,12 @@
                     margin: 0 auto;
                     transition: opacity 0.2s ease;
                 }
+
                 .ship-label {
                     margin: 0 auto;
                 }
             }
+
             .ship-length {
                 text-align: center;
                 margin-top: 0.5rem;
