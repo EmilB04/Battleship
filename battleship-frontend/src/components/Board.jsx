@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import '../styles/components/boardStyle.css';
+import { getShipCells, isValidShipPlacement } from '../utils/shipUtils';
 
 export default function Board({ boardSize = 10, selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
     const BOARD_SIZE = boardSize;
@@ -21,30 +22,6 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
     // Generate row labels (1-10)
     const rowLabels = Array.from({ length: BOARD_SIZE }, (_, i) => i + 1);
 
-    // Check if a position is valid for placing a ship
-    const isValidPlacement = (row, col, ship, orientation) => {
-        if (!ship) return false;
-
-        // Check if ship fits within board
-        if (orientation === 'horizontal') {
-            if (col + ship.length > BOARD_SIZE) return false;
-        } else {
-            if (row + ship.length > BOARD_SIZE) return false;
-        }
-
-        // Check for overlaps with existing ships
-        for (let i = 0; i < ship.length; i++) {
-            const checkRow = orientation === 'horizontal' ? row : row + i;
-            const checkCol = orientation === 'horizontal' ? col + i : col;
-            
-            if (isCellOccupied(checkRow, checkCol)) {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
     // Check if a cell is occupied by any placed ship
     const isCellOccupied = (row, col) => {
         return placedShips.some(ship => {
@@ -53,17 +30,11 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
         });
     };
 
-    // Get all cells occupied by a ship
-    const getShipCells = (ship) => {
-        const cells = [];
-        for (let i = 0; i < ship.length; i++) {
-            if (ship.orientation === 'horizontal') {
-                cells.push({ row: ship.row, col: ship.col + i });
-            } else {
-                cells.push({ row: ship.row + i, col: ship.col });
-            }
-        }
-        return cells;
+    // Check if a position is valid for placing a ship
+    const isValidPlacement = (row, col, ship, orientation) => {
+        if (!ship) return false;
+        const candidateShip = { ...ship, row, col, orientation };
+        return isValidShipPlacement(placedShips, candidateShip, BOARD_SIZE);
     };
 
     // Get preview cells when hovering

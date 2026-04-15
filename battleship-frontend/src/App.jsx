@@ -4,11 +4,13 @@ import StartScreen from './components/StartScreen';
 import Footer from './components/Footer';
 import { useState, useEffect, useCallback } from 'react';
 import GameScreen from './components/GameScreen';
+import { initializeTheme, setupSystemThemeListener } from './utils/themeManager';
+import { initializeDevMode, setupDevModeListener } from './utils/devMode';
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsername] = useState('');
-  const [devMode, setDevMode] = useState(() => localStorage.getItem('devMode') === 'true');
+  const [devMode, setDevMode] = useState(() => initializeDevMode());
   const [leaderboard, setLeaderboard] = useState(() => {
     try {
       const stored = localStorage.getItem('battleshipLeaderboard');
@@ -35,61 +37,23 @@ function App() {
     });
   }, [persistLeaderboard]);
 
-  // Toggle developer mode with Ctrl+Shift+D
+  // Setup dev mode listener
   useEffect(() => {
-    console.log('Press Ctrl+Shift+D to toggle Developer Mode');
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-        e.preventDefault();
-        setDevMode((prev) => {
-          const newMode = !prev;
-          localStorage.setItem('devMode', newMode.toString());
-          console.log(newMode ? '🔧 Developer Mode Enabled' : '🔧 Developer Mode Disabled');
-          return newMode;
-        });
-      }
-    };
+    const cleanup = setupDevModeListener((newMode) => {
+      setDevMode(newMode);
+    });
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return cleanup;
   }, []);
 
   // Initialize theme on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'system';
-    const animationsEnabled = localStorage.getItem('animations') !== 'false';
+    initializeTheme();
 
-    // Apply theme
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark-mode');
-      document.documentElement.classList.remove('light-mode');
-    } else if (savedTheme === 'light') {
-      document.documentElement.classList.add('light-mode');
-      document.documentElement.classList.remove('dark-mode');
-    } else {
-      // System theme - use media query
-      document.documentElement.classList.remove('dark-mode', 'light-mode');
+    // Setup system theme listener
+    const cleanup = setupSystemThemeListener();
 
-      // Listen for system theme changes
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => {
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'system') {
-          // Re-check system preference
-          document.documentElement.classList.remove('dark-mode', 'light-mode');
-        }
-      };
-
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-
-    // Apply animations setting
-    if (!animationsEnabled) {
-      document.documentElement.classList.add('no-animations');
-    } else {
-      document.documentElement.classList.remove('no-animations');
-    }
+    return cleanup;
   }, []);
 
   return (
