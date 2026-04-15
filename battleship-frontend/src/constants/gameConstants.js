@@ -3,7 +3,6 @@
  * Centralized configuration for game mechanics and storage
  */
 
-export const LEADERBOARD_STORAGE_KEY = 'battleshipLeaderboard';
 export const MAX_LEADERBOARD_ENTRIES = 15;
 export const GRID_SIZE_STORAGE_KEY = 'gridSize';
 export const THEME_STORAGE_KEY = 'theme';

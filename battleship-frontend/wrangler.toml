@@ -1,0 +1,9 @@
+name = "battleship-pages"
+compatibility_date = "2026-04-15"
+pages_build_output_dir = "./dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "battleship-leaderboard"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+migrations_dir = "migrations"

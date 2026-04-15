@@ -12,7 +12,7 @@ import { SHIP_TEMPLATES, BOT_TURN_DELAY, DIFFICULTY_STORAGE_KEY, GRID_SIZE_STORA
 // Utilities
 import { getCellKey, getNeighboringCells } from '../utils/cellUtils';
 import { buildShipMap, getSunkShipIds } from '../utils/shipUtils';
-import { generateBotFleet, createLeaderboardEntry, saveMatchResult, checkPlayerVictory, checkBotVictory } from '../utils/gameLogic';
+import { generateBotFleet, createLeaderboardEntry, checkPlayerVictory, checkBotVictory } from '../utils/gameLogic';
 import { getAIShot } from '../utils/aiStrategies';
 
 /**
@@ -139,7 +139,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                 nextPlayerShots.length,
                 nextPlayerHits.length
             );
-            saveMatchResult(entry, persistLeaderboard);
+            persistLeaderboard(entry);
             return;
         }
 
@@ -213,7 +213,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                 playerShots.length,
                 playerHits.length
             );
-            saveMatchResult(entry, persistLeaderboard);
+            persistLeaderboard(entry);
             return;
         }
 

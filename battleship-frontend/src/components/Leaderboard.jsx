@@ -1,5 +1,19 @@
-export default function Leaderboard({ entries, onDeleteEntry, devMode }) {
+export default function Leaderboard({
+    entries,
+    status,
+    onDeleteEntry,
+    devMode
+}) {
     const hasEntries = entries.length > 0;
+
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        if (Number.isNaN(date.getTime())) {
+            return timestamp;
+        }
+
+        return date.toLocaleString('nb-NO');
+    };
 
     const getRankClass = (index) => {
         if (index === 0) return 'rank-gold';
@@ -17,6 +31,12 @@ export default function Leaderboard({ entries, onDeleteEntry, devMode }) {
     return (
         <section className="leaderboard" aria-label="Leaderboard">
             <h3 className="leaderboard-title">Leaderboard</h3>
+
+            {status?.text && (
+                <p className={`leaderboard-status leaderboard-status-${status.level || 'info'}`}>
+                    {status.text}
+                </p>
+            )}
 
             {!hasEntries && <p className="leaderboard-empty">No completed matches yet.</p>}
 
@@ -49,7 +69,7 @@ export default function Leaderboard({ entries, onDeleteEntry, devMode }) {
                                 <td className="col-score">{entry.score}</td>
                                 <td className="col-stats">{entry.playerShots}</td>
                                 <td className="col-stats">{entry.accuracy}%</td>
-                                <td className="col-date">{new Date(entry.timestamp).toLocaleString()}</td>
+                                <td className="col-date">{formatDate(entry.timestamp)}</td>
                                 {devMode && (
                                     <td className="col-action">
                                         <button

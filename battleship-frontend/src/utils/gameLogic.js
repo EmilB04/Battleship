@@ -5,8 +5,6 @@
 
 import { isValidShipPlacement, isFleetDefeated } from './shipUtils.js';
 import {
-    MAX_LEADERBOARD_ENTRIES,
-    LEADERBOARD_STORAGE_KEY,
     BASE_SCORE_WIN,
     BASE_SCORE_LOSS,
     ACCURACY_MULTIPLIER,
@@ -102,27 +100,6 @@ export const createLeaderboardEntry = (username, result, difficulty, gridSize, s
         playerShots: shotsCount,
         accuracy
     };
-};
-
-/**
- * Save match result to leaderboard
- * @param {Object} entry - Leaderboard entry to save
- * @param {Function} persistLeaderboard - Callback to persist leaderboard
- * @returns {void}
- */
-export const saveMatchResult = (entry, persistLeaderboard) => {
-    try {
-        const stored = localStorage.getItem(LEADERBOARD_STORAGE_KEY);
-        const currentLeaderboard = stored ? JSON.parse(stored) : [];
-        const nextEntries = [entry, ...currentLeaderboard]
-            .sort((a, b) => b.score - a.score || Date.parse(b.timestamp) - Date.parse(a.timestamp))
-            .slice(0, MAX_LEADERBOARD_ENTRIES);
-
-        persistLeaderboard(nextEntries);
-    } catch {
-        // If localStorage read fails, just persist the new entry
-        persistLeaderboard([entry]);
-    }
 };
 
 /**
