@@ -1,6 +1,75 @@
 h2 {
     margin-bottom: 1rem;
 }
+
 p {
     margin-bottom: 1rem;
+}
+
+.game-screen {
+    position: relative;
+    padding: 1rem;
+}
+
+.battle-subtitle {
+    margin-bottom: 0.4rem;
+    color: var(--text-secondary);
+}
+
+.battle-status {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.battle-turn {
+    color: var(--radar-green);
+    margin-bottom: 1rem;
+}
+
+.battle-winner {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 1rem;
+}
+
+.battle-boards {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.battle-board-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.battle-board-wrap h3 {
+    margin: 0;
+}
+
+.battle-actions {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.board-cell.targetable {
+    cursor: crosshair;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.board-cell.targetable:hover {
+    background-color: var(--water-hover);
+    box-shadow: inset 0 0 0 2px var(--gold);
+}
+
+@media (max-width: 768px) {
+    .battle-boards {
+        gap: 1rem;
+    }
 }
