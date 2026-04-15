@@ -61,7 +61,7 @@ p {
 .leaderboard {
     margin: 1.5rem auto 0;
     width: min(1000px, 95%);
-    background: rgba(0, 35, 70, 0.5);
+    background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--steel-blue);
     border-radius: var(--border-radius);
     padding: 1rem;
@@ -85,7 +85,7 @@ p {
 }
 
 .leaderboard-table thead {
-    background: rgba(0, 50, 100, 0.4);
+    background: rgba(0, 0, 0, 0.1);
     border-bottom: 2px solid var(--steel-blue);
 }
 
@@ -98,12 +98,12 @@ p {
 }
 
 .leaderboard-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     transition: background-color 0.2s ease;
 }
 
 .leaderboard-table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .leaderboard-table td {
