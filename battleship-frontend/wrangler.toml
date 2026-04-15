@@ -5,5 +5,5 @@ pages_build_output_dir = "./dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "battleship-leaderboard"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "f2a22808-5939-4bf0-8151-8bbae70ac3bd"
 migrations_dir = "migrations"
