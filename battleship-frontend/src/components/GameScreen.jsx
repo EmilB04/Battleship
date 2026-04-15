@@ -6,7 +6,6 @@ import BattleBoard from './BattleBoard';
 import BattleActions from './BattleActions';
 import '../styles/components/gameScreenStyle.css';
 
-const BOARD_SIZE = 10;
 const LEADERBOARD_STORAGE_KEY = 'battleshipLeaderboard';
 const MAX_LEADERBOARD_ENTRIES = 15;
 const SHIP_TEMPLATES = [
@@ -16,6 +15,7 @@ const SHIP_TEMPLATES = [
     { id: 4, name: 'Submarine', label: 'SM', length: 3, color: 'var(--submarine)' },
     { id: 5, name: 'Destroyer', label: 'DE', length: 2, color: 'var(--destroyer)' }
 ];
+
 
 const getCellKey = (row, col) => `${row}-${col}`;
 
@@ -34,54 +34,6 @@ const getShipCells = (ship) => {
         }
     }
     return cells;
-};
-
-const isPlacementValid = (ships, candidateShip) => {
-    for (const cell of getShipCells(candidateShip)) {
-        if (cell.row < 0 || cell.row >= BOARD_SIZE || cell.col < 0 || cell.col >= BOARD_SIZE) {
-            return false;
-        }
-
-        const overlaps = ships.some((ship) =>
-            getShipCells(ship).some(
-                (shipCell) => shipCell.row === cell.row && shipCell.col === cell.col
-            )
-        );
-
-        if (overlaps) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-const generateBotFleet = () => {
-    const botShips = [];
-
-    for (const shipTemplate of SHIP_TEMPLATES) {
-        let placed = false;
-        let attempts = 0;
-
-        while (!placed && attempts < 300) {
-            attempts += 1;
-            const orientation = Math.random() > 0.5 ? 'horizontal' : 'vertical';
-            const row = Math.floor(Math.random() * BOARD_SIZE);
-            const col = Math.floor(Math.random() * BOARD_SIZE);
-            const candidate = { ...shipTemplate, row, col, orientation };
-
-            if (isPlacementValid(botShips, candidate)) {
-                botShips.push(candidate);
-                placed = true;
-            }
-        }
-
-        if (!placed) {
-            return generateBotFleet();
-        }
-    }
-
-    return botShips;
 };
 
 const buildShipMap = (ships) => {
@@ -104,136 +56,9 @@ const getSunkShipIds = (ships, hitsSet) => {
     );
 };
 
-const getNeighborKeys = (cellKey) => {
-    const { row, col } = parseCellKey(cellKey);
-    const directions = [
-        [row - 1, col],
-        [row + 1, col],
-        [row, col - 1],
-        [row, col + 1]
-    ];
-
-    return directions
-        .filter(([r, c]) => r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE)
-        .map(([r, c]) => getCellKey(r, c));
-};
-
-const pickRandomCell = (cells) => {
-    if (!cells.length) {
-        return null;
-    }
-    const idx = Math.floor(Math.random() * cells.length);
-    return cells[idx];
-};
-
-const getUnshotCells = (shotsSet) => {
-    const cells = [];
-    for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
-            const key = getCellKey(row, col);
-            if (!shotsSet.has(key)) {
-                cells.push(key);
-            }
-        }
-    }
-    return cells;
-};
-
-const pickEasyShot = (shotsSet) => pickRandomCell(getUnshotCells(shotsSet));
-
-const pickMediumShot = (shotsSet, targetQueue) => {
-    const queueCandidate = targetQueue.find((cellKey) => !shotsSet.has(cellKey));
-    if (queueCandidate) {
-        return queueCandidate;
-    }
-
-    const checkerboard = getUnshotCells(shotsSet).filter((cellKey) => {
-        const { row, col } = parseCellKey(cellKey);
-        return (row + col) % 2 === 0;
-    });
-
-    return pickRandomCell(checkerboard.length ? checkerboard : getUnshotCells(shotsSet));
-};
-
-const pickHardShot = (shotsSet, hitsSet, ships, shipMap) => {
-    const missesSet = new Set([...shotsSet].filter((cellKey) => !hitsSet.has(cellKey)));
-    const sunkIds = getSunkShipIds(ships, hitsSet);
-    const remainingLengths = ships
-        .filter((ship) => !sunkIds.has(ship.id))
-        .map((ship) => ship.length);
-
-    const unresolvedHits = [...hitsSet].filter((cellKey) => {
-        const shipId = shipMap.get(cellKey);
-        return shipId && !sunkIds.has(shipId);
-    });
-
-    const score = new Map();
-
-    const addPlacementScore = (cells) => {
-        cells.forEach((cellKey) => {
-            if (!shotsSet.has(cellKey)) {
-                score.set(cellKey, (score.get(cellKey) || 0) + 1);
-            }
-        });
-    };
-
-    remainingLengths.forEach((length) => {
-        for (let row = 0; row < BOARD_SIZE; row++) {
-            for (let col = 0; col < BOARD_SIZE; col++) {
-                const horizontal = [];
-                for (let i = 0; i < length; i++) {
-                    horizontal.push(getCellKey(row, col + i));
-                }
-
-                const vertical = [];
-                for (let i = 0; i < length; i++) {
-                    vertical.push(getCellKey(row + i, col));
-                }
-
-                [horizontal, vertical].forEach((placement) => {
-                    const inBounds = placement.every((cellKey) => {
-                        const { row: r, col: c } = parseCellKey(cellKey);
-                        return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE;
-                    });
-
-                    if (!inBounds) {
-                        return;
-                    }
-
-                    const conflictsMiss = placement.some((cellKey) => missesSet.has(cellKey));
-                    if (conflictsMiss) {
-                        return;
-                    }
-
-                    const missesKnownHits = unresolvedHits.length > 0
-                        && !placement.some((cellKey) => unresolvedHits.includes(cellKey));
-                    if (missesKnownHits) {
-                        return;
-                    }
-
-                    addPlacementScore(placement);
-                });
-            }
-        }
-    });
-
-    let bestCell = null;
-    let bestScore = -1;
-    score.forEach((cellScore, cellKey) => {
-        if (cellScore > bestScore) {
-            bestScore = cellScore;
-            bestCell = cellKey;
-        }
-    });
-
-    if (bestCell) {
-        return bestCell;
-    }
-
-    return pickMediumShot(shotsSet, []);
-};
-
 export default function GameScreen({ GoBack, persistLeaderboard, username }) {
+    const [boardSize, setBoardSize] = useState(() => parseInt(localStorage.getItem('gridSize') || '10', 10));
+    const BOARD_SIZE = boardSize;
     const [setup, setSetup] = useState(true);
     const [selectedShip, setSelectedShip] = useState(null);
     const [orientation, setOrientation] = useState('horizontal');
@@ -247,6 +72,213 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
     const [winner, setWinner] = useState(null);
     const [statusText, setStatusText] = useState('Place all ships to begin.');
     const [aiTargetQueue, setAiTargetQueue] = useState([]);
+
+    // Listen for grid size changes
+    useEffect(() => {
+        const handleGridSizeChange = () => {
+            const newSize = parseInt(localStorage.getItem('gridSize') || '10', 10);
+            setBoardSize(newSize);
+            // Reset game when grid size changes
+            if (!setup) {
+                setSetup(true);
+                setStatusText('Place all ships to begin.');
+            }
+        };
+
+        window.addEventListener('gridSizeChanged', handleGridSizeChange);
+        return () => window.removeEventListener('gridSizeChanged', handleGridSizeChange);
+    }, [setup]);
+
+    // Helper functions that depend on BOARD_SIZE
+    const isPlacementValid = useCallback((ships, candidateShip) => {
+        for (const cell of getShipCells(candidateShip)) {
+            if (cell.row < 0 || cell.row >= BOARD_SIZE || cell.col < 0 || cell.col >= BOARD_SIZE) {
+                return false;
+            }
+
+            const overlaps = ships.some((ship) =>
+                getShipCells(ship).some(
+                    (shipCell) => shipCell.row === cell.row && shipCell.col === cell.col
+                )
+            );
+
+            if (overlaps) {
+                return false;
+            }
+        }
+
+        return true;
+    }, [BOARD_SIZE]);
+
+    const generateBotFleet = useCallback(() => {
+        let attempts = 0;
+        const MAX_ATTEMPTS = 5;
+
+        while (attempts < MAX_ATTEMPTS) {
+            attempts += 1;
+            const botShips = [];
+            let allShipsPlaced = true;
+
+            for (const shipTemplate of SHIP_TEMPLATES) {
+                let placed = false;
+                let shipAttempts = 0;
+
+                while (!placed && shipAttempts < 300) {
+                    shipAttempts += 1;
+                    const orientation = Math.random() > 0.5 ? 'horizontal' : 'vertical';
+                    const row = Math.floor(Math.random() * BOARD_SIZE);
+                    const col = Math.floor(Math.random() * BOARD_SIZE);
+                    const candidate = { ...shipTemplate, row, col, orientation };
+
+                    if (isPlacementValid(botShips, candidate)) {
+                        botShips.push(candidate);
+                        placed = true;
+                    }
+                }
+
+                if (!placed) {
+                    allShipsPlaced = false;
+                    break;
+                }
+            }
+
+            if (allShipsPlaced) {
+                return botShips;
+            }
+        }
+
+        // Fallback - should rarely happen
+        return [];
+    }, [BOARD_SIZE, isPlacementValid]);
+
+    const getNeighborKeys = useCallback((cellKey) => {
+        const { row, col } = parseCellKey(cellKey);
+        const directions = [
+            [row - 1, col],
+            [row + 1, col],
+            [row, col - 1],
+            [row, col + 1]
+        ];
+
+        return directions
+            .filter(([r, c]) => r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE)
+            .map(([r, c]) => getCellKey(r, c));
+    }, [BOARD_SIZE]);
+
+    const pickRandomCell = useCallback((cells) => {
+        if (!cells.length) {
+            return null;
+        }
+        const idx = Math.floor(Math.random() * cells.length);
+        return cells[idx];
+    }, []);
+
+    const getUnshotCells = useCallback((shotsSet) => {
+        const cells = [];
+        for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                const key = getCellKey(row, col);
+                if (!shotsSet.has(key)) {
+                    cells.push(key);
+                }
+            }
+        }
+        return cells;
+    }, [BOARD_SIZE]);
+
+    const pickEasyShot = useCallback((shotsSet) => pickRandomCell(getUnshotCells(shotsSet)), [pickRandomCell, getUnshotCells]);
+
+    const pickMediumShot = useCallback((shotsSet, targetQueue) => {
+        const queueCandidate = targetQueue.find((cellKey) => !shotsSet.has(cellKey));
+        if (queueCandidate) {
+            return queueCandidate;
+        }
+
+        const checkerboard = getUnshotCells(shotsSet).filter((cellKey) => {
+            const { row, col } = parseCellKey(cellKey);
+            return (row + col) % 2 === 0;
+        });
+
+        return pickRandomCell(checkerboard.length ? checkerboard : getUnshotCells(shotsSet));
+    }, [getUnshotCells, pickRandomCell]);
+
+    const pickHardShot = useCallback((shotsSet, hitsSet, ships, shipMap) => {
+        const missesSet = new Set([...shotsSet].filter((cellKey) => !hitsSet.has(cellKey)));
+        const sunkIds = getSunkShipIds(ships, hitsSet);
+        const remainingLengths = ships
+            .filter((ship) => !sunkIds.has(ship.id))
+            .map((ship) => ship.length);
+
+        const unresolvedHits = [...hitsSet].filter((cellKey) => {
+            const shipId = shipMap.get(cellKey);
+            return shipId && !sunkIds.has(shipId);
+        });
+
+        const score = new Map();
+
+        const addPlacementScore = (cells) => {
+            cells.forEach((cellKey) => {
+                if (!shotsSet.has(cellKey)) {
+                    score.set(cellKey, (score.get(cellKey) || 0) + 1);
+                }
+            });
+        };
+
+        remainingLengths.forEach((length) => {
+            for (let row = 0; row < BOARD_SIZE; row++) {
+                for (let col = 0; col < BOARD_SIZE; col++) {
+                    const horizontal = [];
+                    for (let i = 0; i < length; i++) {
+                        horizontal.push(getCellKey(row, col + i));
+                    }
+
+                    const vertical = [];
+                    for (let i = 0; i < length; i++) {
+                        vertical.push(getCellKey(row + i, col));
+                    }
+
+                    [horizontal, vertical].forEach((placement) => {
+                        const inBounds = placement.every((cellKey) => {
+                            const { row: r, col: c } = parseCellKey(cellKey);
+                            return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE;
+                        });
+
+                        if (!inBounds) {
+                            return;
+                        }
+
+                        const conflictsMiss = placement.some((cellKey) => missesSet.has(cellKey));
+                        if (conflictsMiss) {
+                            return;
+                        }
+
+                        const missesKnownHits = unresolvedHits.length > 0
+                            && !placement.some((cellKey) => unresolvedHits.includes(cellKey));
+                        if (missesKnownHits) {
+                            return;
+                        }
+
+                        addPlacementScore(placement);
+                    });
+                }
+            }
+        });
+
+        let bestCell = null;
+        let bestScore = -1;
+        score.forEach((cellScore, cellKey) => {
+            if (cellScore > bestScore) {
+                bestScore = cellScore;
+                bestCell = cellKey;
+            }
+        });
+
+        if (bestCell) {
+            return bestCell;
+        }
+
+        return pickMediumShot(shotsSet, []);
+    }, [BOARD_SIZE, pickMediumShot]);
 
     const difficulty = useMemo(() => localStorage.getItem('difficulty') || 'medium', []);
     const playerShotsSet = useMemo(() => new Set(playerShots), [playerShots]);
@@ -268,9 +300,9 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
 
     const columnLabels = useMemo(
         () => Array.from({ length: BOARD_SIZE }, (_, i) => String.fromCharCode(65 + i)),
-        []
+        [BOARD_SIZE]
     );
-    const rowLabels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, i) => i + 1), []);
+    const rowLabels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, i) => i + 1), [BOARD_SIZE]);
 
 
 
@@ -296,6 +328,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
             username,
             result,
             difficulty,
+            gridSize: BOARD_SIZE,
             score,
             playerShots: shotsCount,
             accuracy
@@ -313,7 +346,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
             // If localStorage read fails, just persist the new entry
             persistLeaderboard([newEntry]);
         }
-    }, [difficulty, username, persistLeaderboard]);
+    }, [difficulty, username, BOARD_SIZE, persistLeaderboard]);
 
     const handleStartBattle = () => {
         setBotShips(generateBotFleet());
@@ -400,7 +433,11 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
         botHits,
         playerShots.length,
         playerHits.length,
-        saveMatchResult
+        saveMatchResult,
+        getNeighborKeys,
+        pickEasyShot,
+        pickMediumShot,
+        pickHardShot
     ]);
 
     const handlePlayerShot = (row, col) => {
@@ -475,6 +512,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                         placedShips={placedShips}
                     />
                     <Board 
+                        boardSize={BOARD_SIZE}
                         selectedShip={selectedShip}
                         setSelectedShip={setSelectedShip}
                         orientation={orientation}

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import '../styles/components/boardStyle.css';
 
-export default function Board({ selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
-    const BOARD_SIZE = 10;
+export default function Board({ boardSize = 10, selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
+    const BOARD_SIZE = boardSize;
     const [hoveredCells, setHoveredCells] = useState([]);
 
     // Calculate if all ships are placed (5 ships total)

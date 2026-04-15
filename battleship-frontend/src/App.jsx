@@ -8,6 +8,7 @@ import GameScreen from './components/GameScreen';
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsername] = useState('');
+  const [devMode, setDevMode] = useState(() => localStorage.getItem('devMode') === 'true');
   const [leaderboard, setLeaderboard] = useState(() => {
     try {
       const stored = localStorage.getItem('battleshipLeaderboard');
@@ -24,6 +25,33 @@ function App() {
   const persistLeaderboard = useCallback((entries) => {
     setLeaderboard(entries);
     localStorage.setItem('battleshipLeaderboard', JSON.stringify(entries));
+  }, []);
+
+  const deleteLeaderboardEntry = useCallback((entryId) => {
+    setLeaderboard((prevLeaderboard) => {
+      const updated = prevLeaderboard.filter((entry) => entry.id !== entryId);
+      persistLeaderboard(updated);
+      return updated;
+    });
+  }, [persistLeaderboard]);
+
+  // Toggle developer mode with Ctrl+Shift+D
+  useEffect(() => {
+    console.log('Press Ctrl+Shift+D to toggle Developer Mode');
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setDevMode((prev) => {
+          const newMode = !prev;
+          localStorage.setItem('devMode', newMode.toString());
+          console.log(newMode ? '🔧 Developer Mode Enabled' : '🔧 Developer Mode Disabled');
+          return newMode;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Initialize theme on mount
@@ -75,7 +103,7 @@ function App() {
         <StartScreen StartGame={(inputUsername) => {
           setUsername(inputUsername);
           setGameStarted(true);
-        }} leaderboard={leaderboard} />
+        }} leaderboard={leaderboard} onDeleteEntry={deleteLeaderboardEntry} devMode={devMode} />
       )}
       <Footer />
     </>

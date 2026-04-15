@@ -4,7 +4,7 @@ import HowToPlayScreen from './HowToPlayScreen';
 import SettingsScreen from './SettingsScreen';
 import Leaderboard from './Leaderboard';
 
-export default function StartScreen({ StartGame, leaderboard }) {
+export default function StartScreen({ StartGame, leaderboard, onDeleteEntry, devMode }) {
     const [showHowToPlay, setShowHowToPlay] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showUsernamePrompt, setShowUsernamePrompt] = useState(false);
@@ -70,7 +70,8 @@ export default function StartScreen({ StartGame, leaderboard }) {
                 </div>
             )}
 
-            <Leaderboard entries={leaderboard} />
+            <Leaderboard entries={leaderboard} onDeleteEntry={onDeleteEntry} devMode={devMode} />
+            {devMode && <div className="dev-mode-indicator">🔧 Developer Mode</div>}
             {showHowToPlay && <HowToPlayScreen onClose={() => setShowHowToPlay(false)} />}
             {showSettings && <SettingsScreen onClose={() => setShowSettings(false)} />}
         </>

@@ -119,3 +119,19 @@
     background-color: #c41c3b;
     border-color: #c41c3b;
 }
+
+/* Developer Mode Indicator */
+.dev-mode-indicator {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 193, 7, 0.2);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 100;
+    pointer-events: none;
+}
