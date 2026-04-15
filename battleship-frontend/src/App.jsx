@@ -2,11 +2,29 @@ import './styles/App.css'
 import './styles/theme.css';
 import StartScreen from './components/StartScreen';
 import Footer from './components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import GameScreen from './components/GameScreen';
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [username, setUsername] = useState('');
+  const [leaderboard, setLeaderboard] = useState(() => {
+    try {
+      const stored = localStorage.getItem('battleshipLeaderboard');
+      if (!stored) {
+        return [];
+      }
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const persistLeaderboard = useCallback((entries) => {
+    setLeaderboard(entries);
+    localStorage.setItem('battleshipLeaderboard', JSON.stringify(entries));
+  }, []);
 
   // Initialize theme on mount
   useEffect(() => {
@@ -48,7 +66,17 @@ function App() {
 
   return (
     <>
-      {gameStarted ? <GameScreen GoBack={() => setGameStarted(false)} /> : <StartScreen StartGame={() => setGameStarted(true)} />}
+      {gameStarted ? (
+        <GameScreen GoBack={() => {
+          setGameStarted(false);
+          setUsername('');
+        }} persistLeaderboard={persistLeaderboard} username={username} />
+      ) : (
+        <StartScreen StartGame={(inputUsername) => {
+          setUsername(inputUsername);
+          setGameStarted(true);
+        }} leaderboard={leaderboard} />
+      )}
       <Footer />
     </>
   )

@@ -7,6 +7,8 @@ import BattleActions from './BattleActions';
 import '../styles/components/gameScreenStyle.css';
 
 const BOARD_SIZE = 10;
+const LEADERBOARD_STORAGE_KEY = 'battleshipLeaderboard';
+const MAX_LEADERBOARD_ENTRIES = 15;
 const SHIP_TEMPLATES = [
     { id: 1, name: 'Carrier', label: 'CA', length: 5, color: 'var(--carrier)' },
     { id: 2, name: 'Battleship', label: 'BS', length: 4, color: 'var(--battleship)' },
@@ -231,7 +233,7 @@ const pickHardShot = (shotsSet, hitsSet, ships, shipMap) => {
     return pickMediumShot(shotsSet, []);
 };
 
-export default function GameScreen({ GoBack }) {
+export default function GameScreen({ GoBack, persistLeaderboard, username }) {
     const [setup, setSetup] = useState(true);
     const [selectedShip, setSelectedShip] = useState(null);
     const [orientation, setOrientation] = useState('horizontal');
@@ -270,6 +272,8 @@ export default function GameScreen({ GoBack }) {
     );
     const rowLabels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, i) => i + 1), []);
 
+
+
     const resetBattleState = () => {
         setPlayerShots([]);
         setBotShots([]);
@@ -279,6 +283,37 @@ export default function GameScreen({ GoBack }) {
         setTurn('player');
         setWinner(null);
     };
+
+    const saveMatchResult = useCallback((result, shotsCount, hitsCount) => {
+        const accuracy = shotsCount ? Math.round((hitsCount / shotsCount) * 100) : 0;
+        const speedBonus = Math.max(0, 120 - shotsCount * 2);
+        const baseScore = result === 'player' ? 1000 : 250;
+        const score = baseScore + accuracy * 4 + speedBonus;
+
+        const newEntry = {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            timestamp: new Date().toISOString(),
+            username,
+            result,
+            difficulty,
+            score,
+            playerShots: shotsCount,
+            accuracy
+        };
+
+        try {
+            const stored = localStorage.getItem(LEADERBOARD_STORAGE_KEY);
+            const currentLeaderboard = stored ? JSON.parse(stored) : [];
+            const nextEntries = [newEntry, ...currentLeaderboard]
+                .sort((a, b) => b.score - a.score || Date.parse(b.timestamp) - Date.parse(a.timestamp))
+                .slice(0, MAX_LEADERBOARD_ENTRIES);
+
+            persistLeaderboard(nextEntries);
+        } catch {
+            // If localStorage read fails, just persist the new entry
+            persistLeaderboard([newEntry]);
+        }
+    }, [difficulty, username, persistLeaderboard]);
 
     const handleStartBattle = () => {
         setBotShips(generateBotFleet());
@@ -345,6 +380,7 @@ export default function GameScreen({ GoBack }) {
         if (playerDefeated) {
             setWinner('bot');
             setStatusText('The AI sank your fleet.');
+            saveMatchResult('bot', playerShots.length, playerHits.length);
             return;
         }
 
@@ -361,7 +397,10 @@ export default function GameScreen({ GoBack }) {
         placedShips,
         playerShipMap,
         botShots,
-        botHits
+        botHits,
+        playerShots.length,
+        playerHits.length,
+        saveMatchResult
     ]);
 
     const handlePlayerShot = (row, col) => {
@@ -391,6 +430,7 @@ export default function GameScreen({ GoBack }) {
         if (botDefeated) {
             setWinner('player');
             setStatusText('You sank all enemy ships. Victory.');
+            saveMatchResult('player', nextPlayerShots.length, nextPlayerHits.length);
             return;
         }
 

@@ -26,3 +26,96 @@
         border: var(--danger-red);
     }
 }
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.username-modal h2 {
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.username-modal input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.username-modal input:focus {
+    outline: none;
+    border-color: var(--radar-green);
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+.username-modal input::placeholder {
+    color: var(--text-secondary);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-submit,
+.modal-cancel {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal-submit {
+    background-color: var(--radar-green);
+    border-color: var(--radar-green);
+    color: var(--bg-primary);
+}
+
+.modal-submit:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+}
+
+.modal-cancel {
+    background-color: var(--danger-red);
+    border-color: var(--danger-red);
+    color: var(--bg-primary);
+}
+
+.modal-cancel:hover {
+    background-color: #c41c3b;
+    border-color: #c41c3b;
+}
