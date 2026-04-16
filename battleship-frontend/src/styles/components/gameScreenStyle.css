@@ -541,6 +541,41 @@ p {
     margin: 0;
 }
 
+.leaderboard-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 0.85rem;
+}
+
+.leaderboard-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.leaderboard-control label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.leaderboard-control select {
+    min-width: 150px;
+    font-size: 1rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(10, 22, 40, 0.55);
+    color: var(--text-primary);
+}
+
+.leaderboard-control select:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
 .leaderboard-table {
     width: 100%;
     min-width: 860px;
@@ -712,6 +747,19 @@ p {
     .leaderboard-table {
         font-size: 1rem;
         min-width: 700px;
+    }
+
+    .leaderboard-controls {
+        gap: 0.5rem;
+    }
+
+    .leaderboard-control {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .leaderboard-control select {
+        min-width: 170px;
     }
 
     .leaderboard-table th,
