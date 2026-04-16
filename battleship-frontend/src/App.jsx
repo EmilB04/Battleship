@@ -29,6 +29,14 @@ function App() {
       return;
     }
 
+    if (source === 'unavailable') {
+      setLeaderboardStatus({
+        text: 'Leaderboard service is unavailable right now. Scores will still be tracked locally during this session.',
+        level: 'warning'
+      });
+      return;
+    }
+
     setLeaderboardStatus({ text: '', level: '' });
   }, []);
 
@@ -77,18 +85,9 @@ function App() {
   // Load leaderboard from D1-backed API on startup.
   useEffect(() => {
     const loadLeaderboard = async () => {
-      try {
-        const { entries, source } = await fetchLeaderboardEntries();
-        setStatusFromSource(source);
-        setLeaderboard(entries);
-      } catch (error) {
-        console.error('Failed to load leaderboard entries:', error);
-        setLeaderboardStatus({
-          text: 'Leaderboard service is unavailable. Could not load from D1 or localhost.',
-          level: 'error'
-        });
-        setLeaderboard([]);
-      }
+      const { entries, source } = await fetchLeaderboardEntries();
+      setStatusFromSource(source);
+      setLeaderboard(entries);
     };
 
     loadLeaderboard();

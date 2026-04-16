@@ -5,6 +5,8 @@ import { getShipCells, isValidShipPlacement } from '../utils/shipUtils';
 export default function Board({ boardSize = 10, selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
     const BOARD_SIZE = boardSize;
     const [hoveredCells, setHoveredCells] = useState([]);
+    const facingLabel = orientation === 'horizontal' ? 'Horizontal' : 'Vertical';
+    const facingArrow = orientation === 'horizontal' ? '↔' : '↕';
 
     // Calculate if all ships are placed (5 ships total)
     const TOTAL_SHIPS = 5;
@@ -125,56 +127,70 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
 
     return (
         <section className="board-screen">
-            <table className="game-board">
-                <tbody>
-                    {/* Header row with column labels */}
-                    <tr>
-                        <td className="board-label corner"></td>
-                        {columnLabels.map((label) => (
-                            <td key={label} className="board-label column-label">
-                                {label}
-                            </td>
-                        ))}
-                    </tr>
-                    
-                    {/* Board rows */}
-                    {rowLabels.map((rowLabel, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {/* Row label */}
-                            <td className="board-label row-label">{rowLabel}</td>
-                            
-                            {/* Board cells */}
-                            {columnLabels.map((_, colIndex) => {
-                                const cellKey = `${rowIndex}-${colIndex}`;
-                                const isHovered = hoveredCells.includes(cellKey);
-                                const isOccupied = isCellOccupied(rowIndex, colIndex);
-                                const ship = getShipAtCell(rowIndex, colIndex);
-                                
-                                return (
-                                    <td
-                                        key={cellKey}
-                                        className={`board-cell ${isOccupied ? 'occupied' : ''} ${isHovered ? 'hover-preview' : ''}`}
-                                        style={{
-                                            backgroundColor: isOccupied && ship ? ship.color : undefined
-                                        }}
-                                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                                        onMouseLeave={handleCellMouseLeave}
-                                        onClick={() => handleCellClick(rowIndex, colIndex)}
-                                        onContextMenu={(e) => handleCellContextMenu(e, rowIndex, colIndex)}
-                                        onDoubleClick={() => handleCellDoubleClick(rowIndex, colIndex)}
-                                        onDragOver={(e) => handleDragOver(e, rowIndex, colIndex)}
-                                        onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
-                                    >
-                                        {isOccupied && ship && (
-                                            <span className="ship-label">{ship.label}</span>
-                                        )}
-                                    </td>
-                                );
-                            })}
+            <div className="board-placement-area">
+                <div className="board-direction board-direction-left" aria-hidden="true">
+                    <span className="board-direction-label">Facing</span>
+                    <span className="board-direction-arrow">{facingArrow}</span>
+                    <span className="board-direction-text">{facingLabel}</span>
+                </div>
+
+                <table className="game-board">
+                    <tbody>
+                        {/* Header row with column labels */}
+                        <tr>
+                            <td className="board-label corner"></td>
+                            {columnLabels.map((label) => (
+                                <td key={label} className="board-label column-label">
+                                    {label}
+                                </td>
+                            ))}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                        
+                        {/* Board rows */}
+                        {rowLabels.map((rowLabel, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {/* Row label */}
+                                <td className="board-label row-label">{rowLabel}</td>
+                                
+                                {/* Board cells */}
+                                {columnLabels.map((_, colIndex) => {
+                                    const cellKey = `${rowIndex}-${colIndex}`;
+                                    const isHovered = hoveredCells.includes(cellKey);
+                                    const isOccupied = isCellOccupied(rowIndex, colIndex);
+                                    const ship = getShipAtCell(rowIndex, colIndex);
+                                    
+                                    return (
+                                        <td
+                                            key={cellKey}
+                                            className={`board-cell ${isOccupied ? 'occupied' : ''} ${isHovered ? 'hover-preview' : ''}`}
+                                            style={{
+                                                backgroundColor: isOccupied && ship ? ship.color : undefined
+                                            }}
+                                            onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                                            onMouseLeave={handleCellMouseLeave}
+                                            onClick={() => handleCellClick(rowIndex, colIndex)}
+                                            onContextMenu={(e) => handleCellContextMenu(e, rowIndex, colIndex)}
+                                            onDoubleClick={() => handleCellDoubleClick(rowIndex, colIndex)}
+                                            onDragOver={(e) => handleDragOver(e, rowIndex, colIndex)}
+                                            onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
+                                        >
+                                            {isOccupied && ship && (
+                                                <span className="ship-label">{ship.label}</span>
+                                            )}
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <div className="board-direction board-direction-right" aria-hidden="true">
+                    <span className="board-direction-label">Facing</span>
+                    <span className="board-direction-arrow">{facingArrow}</span>
+                    <span className="board-direction-text">{facingLabel}</span>
+                </div>
+            </div>
             
             {/* Start Game button */}
             <button 
@@ -183,7 +199,7 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                 disabled={!allShipsPlaced}
                 title={!allShipsPlaced ? `Place all ${TOTAL_SHIPS} ships to start (${placedShips.length}/${TOTAL_SHIPS})` : 'Start the game!'}
             >
-                {allShipsPlaced ? 'Start Game' : `Place Ships (${placedShips.length}/${TOTAL_SHIPS})`}
+                {allShipsPlaced ? 'Start Game' : `Placed Ships (${placedShips.length}/${TOTAL_SHIPS})`}
             </button>
         </section>
     );

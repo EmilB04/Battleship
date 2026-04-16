@@ -56,17 +56,25 @@ const requestWithFallback = async (pathSuffix, init) => {
 };
 
 export const fetchLeaderboardEntries = async () => {
-    const { data, source } = await requestWithFallback('', {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json'
-        }
-    });
+    try {
+        const { data, source } = await requestWithFallback('', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json'
+            }
+        });
 
-    return {
-        entries: normalizeLeaderboardEntries(data.entries || []),
-        source
-    };
+        return {
+            entries: normalizeLeaderboardEntries(data.entries || []),
+            source
+        };
+    } catch (error) {
+        console.warn('Leaderboard API unavailable, using empty local state:', error);
+        return {
+            entries: [],
+            source: 'unavailable'
+        };
+    }
 };
 
 export const createLeaderboardEntryRemote = async (entry) => {
