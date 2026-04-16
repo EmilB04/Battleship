@@ -275,6 +275,14 @@
     }
 }
 .settings {
+    &.overlay:not(.is-closing) {
+        animation: none;
+    }
+
+    .overlay-content:not(.is-closing) {
+        animation: none;
+    }
+
     .settings-screen {
         display: flex;
         flex-direction: column;
