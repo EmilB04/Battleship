@@ -55,7 +55,7 @@ p {
     border: 1px solid rgba(255, 255, 255, 0.45);
     background: rgba(120, 8, 24, 0.32);
     color: #fff7f7;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1;
 }
 
@@ -154,9 +154,97 @@ p {
     gap: clamp(1.15rem, 2.3vw, 2.4rem);
 }
 
-.battle-boards.has-summary {
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 290px) minmax(0, 1fr);
+.battle-boards.is-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 1700px);
+    gap: clamp(0.6rem, 1.2vw, 1.15rem);
+}
+
+.battle-boards.has-summary,
+.battle-boards.has-middle-column {
+    --middle-column-width: 160px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--middle-column-width)) minmax(0, 1fr);
     align-items: center;
+}
+
+.battle-middle-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: var(--middle-column-width);
+    max-width: var(--middle-column-width);
+    justify-self: center;
+    flex: 0 1 auto;
+}
+
+.battle-marker-legend-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.35rem;
+}
+
+.battle-marker-legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: fit-content;
+    align-self: center;
+    padding: 0.3rem 0.34rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+}
+
+.battle-marker-legend-item {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    justify-content: start;
+    gap: 0.28rem;
+    padding: 0.06rem 0;
+}
+
+.battle-marker-swatch {
+    width: 0.92rem;
+    height: 0.92rem;
+    display: grid;
+    place-items: center;
+    border-radius: 3px;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0;
+}
+
+.battle-marker-swatch.is-miss {
+    background: var(--miss);
+    color: var(--mid-gray);
+    transform: translateY(-0.5px);
+}
+
+.battle-marker-swatch.is-hit {
+    background: var(--hit);
+    color: var(--white);
+    transform: translateY(-0.25px);
+}
+
+.battle-marker-swatch.is-sunk {
+    background: var(--sunk);
+    color: var(--white);
+    transform: translateY(-0.25px);
+}
+
+.battle-marker-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
 }
 
 .battle-summary-column {
@@ -164,6 +252,10 @@ p {
     flex-direction: column;
     align-items: stretch;
     gap: 0.4rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 0.85rem 0.8rem;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -175,7 +267,7 @@ p {
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 0.68rem;
+    font-size: 1rem;
     color: var(--text-secondary);
 }
 
@@ -188,7 +280,7 @@ p {
 
 .battle-summary-subtitle {
     margin: 0 0 0.15rem;
-    font-size: 0.82rem;
+    font-size: 1rem;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -215,12 +307,12 @@ p {
 }
 
 .battle-summary-label {
-    font-size: 0.78rem;
+    font-size: 1rem;
     color: var(--text-secondary);
 }
 
 .battle-summary-value {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 800;
     color: var(--text-primary);
 }
@@ -291,7 +383,7 @@ p {
 
 .ships-remaining-title {
     margin: 0 0 0.45rem 0;
-    font-size: 0.72rem;
+    font-size: 1rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-secondary);
@@ -311,7 +403,7 @@ p {
     grid-template-columns: 14px 28px 1fr auto;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--text-primary);
 }
 
@@ -336,7 +428,7 @@ p {
 
 .ships-remaining-length {
     color: var(--text-primary);
-    font-size: 0.7rem;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     border: 1px solid rgba(255, 255, 255, 0.14);
@@ -423,7 +515,7 @@ p {
     padding: 0.6rem 0.75rem;
     border-radius: 6px;
     border: 1px solid transparent;
-    font-size: 0.92rem;
+    font-size: 1rem;
 }
 
 .leaderboard-status-warning {
@@ -453,7 +545,7 @@ p {
     width: 100%;
     min-width: 860px;
     border-collapse: collapse;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .leaderboard-table thead {
@@ -550,7 +642,7 @@ p {
 .col-date {
     min-width: 160px;
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 1rem;
     text-align: left;
 }
 
@@ -595,6 +687,16 @@ p {
         grid-template-columns: 1fr;
     }
 
+    .battle-boards.has-middle-column,
+    .battle-boards.is-compact {
+        grid-template-columns: 1fr;
+    }
+
+    .battle-middle-column {
+        width: min(100%, 560px);
+        margin: 0 auto;
+    }
+
     .battle-boards.has-summary {
         grid-template-columns: 1fr;
     }
@@ -608,7 +710,7 @@ p {
     }
 
     .leaderboard-table {
-        font-size: 0.85rem;
+        font-size: 1rem;
         min-width: 700px;
     }
 

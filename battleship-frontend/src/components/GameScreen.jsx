@@ -4,6 +4,8 @@ import Ships from './Ships';
 import BattleStatus from './BattleStatus';
 import BattleBoard from './BattleBoard';
 import BattleActions from './BattleActions';
+import PlayerSummary from './PlayerSummary';
+import BattleMarkerLegend from './BattleMarkerLegend';
 import '../styles/components/gameScreenStyle.css';
 
 // Constants
@@ -332,7 +334,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                         winner={winner}
                     />
 
-                    <div className={`battle-boards ${winner ? 'has-summary' : ''}`}>
+                    <div className={`battle-boards ${winner ? 'has-summary' : 'is-compact'}`}>
                         <BattleBoard
                             boardType="player"
                             columnLabels={columnLabels}
@@ -347,34 +349,10 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                             getCellKey={getCellKey}
                         />
 
-                        {playerSummary && (
-                            <section className="battle-summary-column" aria-live="polite">
-                                <p className="battle-summary-kicker">Battle Summary</p>
-                                <h3 className="battle-summary-title">Winner: {playerSummary.winnerLabel}</h3>
-                                <p className="battle-summary-subtitle">Player Stats</p>
-                                <ul className="battle-summary-list">
-                                    <li className="battle-summary-item">
-                                        <span className="battle-summary-label">Shots Fired</span>
-                                        <span className="battle-summary-value">{playerSummary.shots}</span>
-                                    </li>
-                                    <li className="battle-summary-item">
-                                        <span className="battle-summary-label">Hits</span>
-                                        <span className="battle-summary-value">{playerSummary.hits}</span>
-                                    </li>
-                                    <li className="battle-summary-item">
-                                        <span className="battle-summary-label">Misses</span>
-                                        <span className="battle-summary-value">{playerSummary.misses}</span>
-                                    </li>
-                                    <li className="battle-summary-item">
-                                        <span className="battle-summary-label">Accuracy</span>
-                                        <span className="battle-summary-value">{playerSummary.accuracy}%</span>
-                                    </li>
-                                    <li className="battle-summary-item">
-                                        <span className="battle-summary-label">Enemy Ships Sunk</span>
-                                        <span className="battle-summary-value">{playerSummary.shipsSunk}</span>
-                                    </li>
-                                </ul>
-                            </section>
+                        {winner && (
+                            <div className="battle-middle-column">
+                                <PlayerSummary summary={playerSummary} />
+                            </div>
                         )}
 
                         <BattleBoard
@@ -391,6 +369,12 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                             getCellKey={getCellKey}
                         />
                     </div>
+
+                    {!winner && (
+                        <div className="battle-marker-legend-row">
+                            <BattleMarkerLegend />
+                        </div>
+                    )}
 
                     {winner && <BattleActions onNewBattle={handleNewBattle} onQuit={GoBack} />}
                 </>

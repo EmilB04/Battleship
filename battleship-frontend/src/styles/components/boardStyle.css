@@ -245,9 +245,174 @@
     background-color: var(--sunk);
 }
 
+.board-marker-legend {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+}
+
+.board-marker-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.board-marker-swatch {
+    width: 1.05rem;
+    height: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.board-marker-swatch.is-miss {
+    background: var(--miss);
+    color: var(--mid-gray);
+}
+
+.board-marker-swatch.is-hit {
+    background: var(--hit);
+    color: var(--white);
+}
+
+.board-marker-swatch.is-sunk {
+    background: var(--sunk);
+    color: var(--white);
+}
+
+.board-marker-text {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+}
+
+.board-cell.sunk-exploding {
+    overflow: hidden;
+}
+
+.sunk-explosion {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.sunk-explosion-core,
+.sunk-explosion-ring,
+.sunk-explosion-sparks {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sunk-explosion-core {
+    width: 38%;
+    height: 38%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fffbe8 0%, #ffb703 45%, #e63946 100%);
+    animation: sunkExplosionCore 0.65s ease-out forwards;
+}
+
+.sunk-explosion-ring {
+    width: 24%;
+    height: 24%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 202, 58, 0.9);
+    animation: sunkExplosionRing 0.7s ease-out forwards;
+}
+
+.sunk-explosion-sparks {
+    width: 94%;
+    height: 94%;
+}
+
+.sunk-explosion-sparks::before,
+.sunk-explosion-sparks::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 25%, rgba(255, 183, 3, 0.95) 0 7%, transparent 8%),
+        radial-gradient(circle at 72% 16%, rgba(255, 214, 102, 0.9) 0 6%, transparent 7%),
+        radial-gradient(circle at 84% 68%, rgba(255, 107, 53, 0.9) 0 7%, transparent 8%),
+        radial-gradient(circle at 30% 80%, rgba(255, 233, 196, 0.9) 0 6%, transparent 7%);
+}
+
+.sunk-explosion-sparks::before {
+    animation: sunkExplosionSparks 0.62s ease-out forwards;
+}
+
+.sunk-explosion-sparks::after {
+    animation: sunkExplosionSparks 0.7s ease-out forwards;
+    transform: rotate(28deg);
+    opacity: 0.75;
+}
+
+@keyframes sunkExplosionCore {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.35);
+        filter: blur(0.5px);
+    }
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.18);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.75);
+    }
+}
+
+@keyframes sunkExplosionRing {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.2);
+    }
+}
+
+@keyframes sunkExplosionSparks {
+    0% {
+        opacity: 0;
+        transform: scale(0.45);
+    }
+    24% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.18);
+    }
+}
+
 /* Disable animations if setting is off */
 :root.no-animations .board-cell {
     transition: none;
+}
+
+:root.no-animations .sunk-explosion {
+    display: none;
 }
 
 /* Responsive adjustments */
@@ -282,6 +447,14 @@
 
     .board-cell .ship-label {
         font-size: clamp(0.4rem, 2vw, 0.6rem);
+    }
+
+    .board-marker-legend {
+        gap: 0.4rem;
+    }
+
+    .board-marker-legend-item {
+        padding: 0.16rem 0.34rem;
     }
 }
 
