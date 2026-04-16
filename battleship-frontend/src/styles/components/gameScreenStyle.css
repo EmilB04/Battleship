@@ -20,6 +20,34 @@ p {
     top: clamp(0.4rem, 1vw, 1rem);
     left: clamp(0.4rem, 1vw, 1rem);
     z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 107, 53, 0.95), rgba(230, 57, 70, 0.95));
+    color: var(--white);
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(230, 57, 70, 0.22);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.back-to-menu-button:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(230, 57, 70, 0.3);
+    filter: saturate(1.05);
+}
+
+.back-to-menu-button:focus,
+.back-to-menu-button:focus-visible {
+    outline: 3px solid rgba(255, 183, 3, 0.6);
+    outline-offset: 3px;
+}
+
+.back-arrow-icon {
+    color: #ffffff;
+    font-size: 1rem;
 }
 
 .battle-subtitle {
@@ -257,6 +285,8 @@ p {
     .back-to-menu-button {
         position: static;
         margin: 0 0 0.8rem;
+        width: 100%;
+        justify-content: center;
     }
 
     .battle-boards {

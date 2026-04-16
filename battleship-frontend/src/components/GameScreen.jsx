@@ -263,14 +263,15 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
 
     return (
         <section className="game-screen">
-            <button className="back-to-menu-button" onClick={GoBack}>
-                ← Back to Menu
+            <button className="back-to-menu-button" onClick={GoBack} title="Return to the main menu">
+                <span className="back-arrow-icon" aria-hidden="true">←</span>
+                <span>Back to Menu</span>
             </button>
 
             {setup && (
                 <>
                     <h2>Place Your Ships</h2>
-                    <p>Drag ships to the board or click to place. Double-click or right-click placed ships to remove them.</p>
+                    <p>Drag ships to the board or click to place. Right-click placed ships to remove them.</p>
                     <Ships
                         selectedShip={selectedShip}
                         setSelectedShip={setSelectedShip}

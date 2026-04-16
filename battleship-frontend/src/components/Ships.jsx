@@ -16,6 +16,9 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
         e.dataTransfer.effectAllowed = 'move';
     };
 
+    const facingLabel = orientation === 'horizontal' ? 'Horizontal' : 'Vertical';
+    const facingArrow = orientation === 'horizontal' ? '↔' : '↕';
+
     return (
         <section id="ships-container">
             
@@ -48,11 +51,19 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
                 ))}
             </div>
                 <div id="header-buttons">
+                    <div className="orientation-indicator" aria-live="polite">
+                        <span className="orientation-indicator-label">Facing</span>
+                        <span className="orientation-indicator-arrow" aria-hidden="true">{facingArrow}</span>
+                        <span className="orientation-indicator-text">{facingLabel}</span>
+                    </div>
                     <button 
                         id="orientation-button"
                         onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
+                        aria-label={`Rotate ships to ${orientation === 'horizontal' ? 'vertical' : 'horizontal'}`}
+                        title={`Rotate ships to ${orientation === 'horizontal' ? 'vertical' : 'horizontal'}`}
                     >
-                        Rotate: {orientation === 'horizontal' ? '→' : '↓'}
+                        <span className="orientation-button-text">Rotate Ships</span>
+                        <span className="orientation-button-arrow" aria-hidden="true">{facingArrow}</span>
                     </button>
                 </div>
         </section>
