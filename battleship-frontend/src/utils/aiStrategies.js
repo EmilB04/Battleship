@@ -163,8 +163,168 @@ export const pickHardShot = (shotsSet, hitsSet, defendingShips, defendingShipMap
 };
 
 /**
+ * Extreme AI strategy - aggressive sink behavior with weighted probability hunt.
+ * Enhancements over hard:
+ * - If a ship is wounded, prioritize finishing it immediately.
+ * - During hunt mode, weigh placements by ship length and center pressure.
+ * @param {Set} shotsSet - Set of previously shot cell keys
+ * @param {Set} hitsSet - Set of hit cell keys
+ * @param {Array} defendingShips - Array of defending ships
+ * @param {Map} defendingShipMap - Map of cells to ship IDs
+ * @param {number} boardSize - Board size
+ * @returns {string|null} Next cell to target
+ */
+export const pickExtremeShot = (shotsSet, hitsSet, defendingShips, defendingShipMap, boardSize) => {
+    const missesSet = new Set([...shotsSet].filter((cellKey) => !hitsSet.has(cellKey)));
+    const sunkIds = getSunkShipIds(defendingShips, hitsSet);
+
+    const remainingShips = defendingShips.filter((ship) => !sunkIds.has(ship.id));
+    const remainingLengths = remainingShips.map((ship) => ship.length);
+
+    const unresolvedHits = [...hitsSet].filter((cellKey) => {
+        const shipId = defendingShipMap.get(cellKey);
+        return shipId && !sunkIds.has(shipId);
+    });
+
+    const unresolvedByShip = new Map();
+    unresolvedHits.forEach((cellKey) => {
+        const shipId = defendingShipMap.get(cellKey);
+        if (!shipId) {
+            return;
+        }
+
+        if (!unresolvedByShip.has(shipId)) {
+            unresolvedByShip.set(shipId, []);
+        }
+        unresolvedByShip.get(shipId).push(cellKey);
+    });
+
+    let priorityShipId = null;
+    let maxKnownHits = 0;
+    unresolvedByShip.forEach((cells, shipId) => {
+        if (cells.length > maxKnownHits) {
+            maxKnownHits = cells.length;
+            priorityShipId = shipId;
+        }
+    });
+
+    if (priorityShipId) {
+        const shipCells = [];
+        defendingShipMap.forEach((shipId, cellKey) => {
+            if (shipId === priorityShipId) {
+                shipCells.push(cellKey);
+            }
+        });
+
+        const unshotShipCells = shipCells.filter((cellKey) => !shotsSet.has(cellKey));
+        if (unshotShipCells.length > 0) {
+            const knownHits = unresolvedByShip.get(priorityShipId) || [];
+            if (knownHits.length <= 1) {
+                return pickRandomCell(unshotShipCells);
+            }
+
+            const parsedHits = knownHits.map((cellKey) => parseCellKey(cellKey));
+            const mostlyHorizontal = parsedHits.every((pos) => pos.row === parsedHits[0].row);
+
+            const scoredTargets = unshotShipCells
+                .map((cellKey) => {
+                    const { row, col } = parseCellKey(cellKey);
+                    const minDistanceToKnownHit = Math.min(
+                        ...parsedHits.map((hitPos) => Math.abs(hitPos.row - row) + Math.abs(hitPos.col - col))
+                    );
+
+                    let alignmentBonus = 0;
+                    if (mostlyHorizontal && row === parsedHits[0].row) {
+                        alignmentBonus = 1;
+                    }
+                    if (!mostlyHorizontal && col === parsedHits[0].col) {
+                        alignmentBonus = 1;
+                    }
+
+                    return {
+                        cellKey,
+                        score: (alignmentBonus * 100) - minDistanceToKnownHit
+                    };
+                })
+                .sort((a, b) => b.score - a.score);
+
+            return scoredTargets[0]?.cellKey || pickRandomCell(unshotShipCells);
+        }
+    }
+
+    const score = new Map();
+    const center = (boardSize - 1) / 2;
+
+    const addPlacementScore = (cells, length) => {
+        cells.forEach((cellKey) => {
+            if (shotsSet.has(cellKey)) {
+                return;
+            }
+
+            const { row, col } = parseCellKey(cellKey);
+            const distanceToCenter = Math.abs(row - center) + Math.abs(col - center);
+            const centerBonus = Math.max(0, boardSize - distanceToCenter) / boardSize;
+            const currentScore = score.get(cellKey) || 0;
+            score.set(cellKey, currentScore + length + centerBonus);
+        });
+    };
+
+    remainingLengths.forEach((length) => {
+        for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize; col++) {
+                const horizontal = [];
+                for (let i = 0; i < length; i++) {
+                    horizontal.push(getCellKey(row, col + i));
+                }
+
+                const vertical = [];
+                for (let i = 0; i < length; i++) {
+                    vertical.push(getCellKey(row + i, col));
+                }
+
+                [horizontal, vertical].forEach((placement) => {
+                    const inBounds = placement.every((cellKey) => {
+                        const { row: r, col: c } = parseCellKey(cellKey);
+                        return r >= 0 && r < boardSize && c >= 0 && c < boardSize;
+                    });
+
+                    if (!inBounds) {
+                        return;
+                    }
+
+                    if (placement.some((cellKey) => missesSet.has(cellKey))) {
+                        return;
+                    }
+
+                    if (unresolvedHits.length > 0 && !placement.some((cellKey) => unresolvedHits.includes(cellKey))) {
+                        return;
+                    }
+
+                    addPlacementScore(placement, length);
+                });
+            }
+        }
+    });
+
+    let bestCell = null;
+    let bestScore = -1;
+    score.forEach((cellScore, cellKey) => {
+        if (cellScore > bestScore) {
+            bestScore = cellScore;
+            bestCell = cellKey;
+        }
+    });
+
+    if (bestCell) {
+        return bestCell;
+    }
+
+    return pickHardShot(shotsSet, hitsSet, defendingShips, defendingShipMap, boardSize);
+};
+
+/**
  * Get AI shot based on difficulty level
- * @param {string} difficulty - Difficulty level ('easy', 'medium', 'hard')
+ * @param {string} difficulty - Difficulty level ('easy', 'medium', 'hard', 'extreme')
  * @param {Set} shotsSet - Set of previously shot cell keys
  * @param {Set} hitsSet - Set of hit cell keys
  * @param {string[]} targetQueue - Queue of cells to investigate
@@ -186,7 +346,9 @@ export const getAIShot = (
         return pickEasyShot(shotsSet, boardSize);
     } else if (difficulty === 'medium') {
         return pickMediumShot(shotsSet, targetQueue, boardSize);
-    } else {
+    } else if (difficulty === 'hard') {
         return pickHardShot(shotsSet, hitsSet, defendingShips, defendingShipMap, boardSize);
+    } else {
+        return pickExtremeShot(shotsSet, hitsSet, defendingShips, defendingShipMap, boardSize);
     }
 };

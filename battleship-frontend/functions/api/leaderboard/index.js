@@ -19,7 +19,7 @@ const parseEntryPayload = (raw) => {
     const playerShots = Number(raw.playerShots);
     const accuracy = Number(raw.accuracy);
 
-    const allowedDifficulties = new Set(['easy', 'medium', 'hard']);
+    const allowedDifficulties = new Set(['easy', 'medium', 'hard', 'extreme']);
 
     if (!username || username.length > 32) {
         return { valid: false, message: 'Invalid username' };

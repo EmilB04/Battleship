@@ -21,7 +21,8 @@ export const SHIP_TEMPLATES = [
 export const DIFFICULTY_LEVELS = {
     EASY: 'easy',
     MEDIUM: 'medium',
-    HARD: 'hard'
+    HARD: 'hard',
+    EXTREME: 'extreme'
 };
 
 export const GAME_STATES = {
@@ -65,6 +66,10 @@ export const AI_CONFIG = {
     HARD: {
         name: 'Hard',
         strategy: 'smart'
+    },
+    EXTREME: {
+        name: 'Extreme',
+        strategy: 'predictive'
     }
 };
 

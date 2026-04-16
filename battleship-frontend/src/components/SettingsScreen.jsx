@@ -123,6 +123,7 @@ export default function SettingsScreen({ onClose, isClosing = false }) {
                                 <option value="easy">Easy</option>
                                 <option value="medium">Medium</option>
                                 <option value="hard">Hard</option>
+                                <option value="extreme">Extreme</option>
                             </select>
                         </div>
                     </div>
