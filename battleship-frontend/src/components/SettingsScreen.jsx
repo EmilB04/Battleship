@@ -1,7 +1,7 @@
 import '../styles/components/startOverlays.css';
 import { useState, useEffect } from 'react';
 
-export default function SettingsScreen({ onClose }) {
+export default function SettingsScreen({ onClose, isClosing = false }) {
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'system');
     const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('soundEnabled') !== 'false');
     const [gridSize, setGridSize] = useState(() => localStorage.getItem('gridSize') || '10');
@@ -46,8 +46,8 @@ export default function SettingsScreen({ onClose }) {
     }, [animations]);
 
     return (
-        <div className="settings overlay" onClick={onClose}>
-            <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
+        <div className={`settings overlay ${isClosing ? 'is-closing' : ''}`} onClick={onClose}>
+            <div className={`overlay-content ${isClosing ? 'is-closing' : ''}`} onClick={(e) => e.stopPropagation()}>
                 <button className="close-button" onClick={onClose}>×</button>
                 <section className="settings-screen">
                     <h2>Settings</h2>
@@ -123,6 +123,7 @@ export default function SettingsScreen({ onClose }) {
                                 <option value="easy">Easy</option>
                                 <option value="medium">Medium</option>
                                 <option value="hard">Hard</option>
+                                <option value="extreme">Extreme</option>
                             </select>
                         </div>
                     </div>

@@ -1,4 +1,18 @@
 footer {
     text-align: center;
-    padding: 1rem;
+    padding: 0.75rem 0.5rem;
+    opacity: 0.75;
+}
+
+footer p {
+    margin: 0;
+    font-size: clamp(0.72rem, 0.55rem + 0.35vw, 0.9rem);
+    line-height: 1.2;
+    letter-spacing: 0.03em;
+}
+
+footer a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
 }

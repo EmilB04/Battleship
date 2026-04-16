@@ -47,14 +47,17 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
                     </div>
                 ))}
             </div>
-                <div id="header-buttons">
-                    <button 
-                        id="orientation-button"
-                        onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
-                    >
-                        Rotate: {orientation === 'horizontal' ? '→' : '↓'}
-                    </button>
-                </div>
+            <div id="header-buttons">
+                <button
+                    id="orientation-button"
+                    onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
+                    aria-label={`Rotate ships to ${orientation === 'horizontal' ? 'vertical' : 'horizontal'}`}
+                    title={`Rotate ships to ${orientation === 'horizontal' ? 'vertical' : 'horizontal'}`}
+                >
+                    <span className="orientation-button-text">Rotate Ships</span>
+                    <span className="orientation-button-arrow" aria-hidden="true">{orientation === 'horizontal' ? '↔' : '↕'}</span>
+                </button>
+            </div>
         </section>
     );
 }
