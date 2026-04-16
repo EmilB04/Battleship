@@ -8,7 +8,18 @@ p {
 
 .game-screen {
     position: relative;
-    padding: 1rem;
+    width: min(100%, 1700px);
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 2rem);
+    border-radius: 14px;
+    box-sizing: border-box;
+}
+
+.back-to-menu-button {
+    position: absolute;
+    top: clamp(0.4rem, 1vw, 1rem);
+    left: clamp(0.4rem, 1vw, 1rem);
+    z-index: 3;
 }
 
 .battle-subtitle {
@@ -34,11 +45,12 @@ p {
 }
 
 .battle-boards {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    width: min(100%, 1450px);
+    margin: 0 auto;
+    align-items: start;
+    gap: clamp(1rem, 2vw, 2rem);
 }
 
 .battle-board-wrap {
@@ -46,6 +58,8 @@ p {
     flex-direction: column;
     align-items: center;
     gap: 0.7rem;
+    width: 100%;
+    min-width: 0;
 }
 
 .battle-board-wrap h3 {
@@ -60,11 +74,12 @@ p {
 
 .leaderboard {
     margin: 1.5rem auto 0;
-    width: min(1000px, 95%);
+    width: min(100%, 1450px);
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--steel-blue);
     border-radius: var(--border-radius);
-    padding: 1rem;
+    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    overflow-x: auto;
 }
 
 .leaderboard-title {
@@ -106,6 +121,7 @@ p {
 
 .leaderboard-table {
     width: 100%;
+    min-width: 860px;
     border-collapse: collapse;
     font-size: 0.95rem;
 }
@@ -233,12 +249,27 @@ p {
 }
 
 @media (max-width: 768px) {
+    .game-screen {
+        width: 100%;
+        padding: 0.8rem 0.25rem 1rem;
+    }
+
+    .back-to-menu-button {
+        position: static;
+        margin: 0 0 0.8rem;
+    }
+
+    .battle-boards {
+        grid-template-columns: 1fr;
+    }
+
     .leaderboard {
-        width: 95%;
+        width: 100%;
     }
 
     .leaderboard-table {
         font-size: 0.85rem;
+        min-width: 700px;
     }
 
     .leaderboard-table th,
@@ -277,5 +308,21 @@ p {
     .leaderboard-meta {
         grid-column: 1 / -1;
         justify-content: flex-start;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1700px) {
+    .battle-boards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 2100px) {
+    .game-screen {
+        width: min(100%, 2000px);
+    }
+
+    .battle-boards {
+        width: min(100%, 1750px);
     }
 }

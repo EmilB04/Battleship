@@ -263,7 +263,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
 
     return (
         <section className="game-screen">
-            <button style={{ position: "absolute", top: "10px", left: "10px" }} onClick={GoBack}>
+            <button className="back-to-menu-button" onClick={GoBack}>
                 ← Back to Menu
             </button>
 

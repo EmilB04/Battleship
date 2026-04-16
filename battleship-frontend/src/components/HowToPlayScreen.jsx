@@ -1,9 +1,9 @@
 import '../styles/components/startOverlays.css';
 
-export default function HowToPlayScreen({ onClose }) {
+export default function HowToPlayScreen({ onClose, isClosing = false }) {
     return (
-        <div className="how-to-play overlay" onClick={onClose}>
-            <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
+        <div className={`how-to-play overlay ${isClosing ? 'is-closing' : ''}`} onClick={onClose}>
+            <div className={`overlay-content ${isClosing ? 'is-closing' : ''}`} onClick={(e) => e.stopPropagation()}>
                 <button className="close-button" onClick={onClose}>×</button>
                 <section className="how-to-play-screen">
                     <h2>How to Play</h2>

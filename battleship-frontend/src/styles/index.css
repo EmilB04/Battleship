@@ -10,17 +10,25 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  --layout-max-width: 1800px;
+  --layout-gutter: clamp(0.85rem, 2vw, 2.5rem);
+
   text-align: center;
 }
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  display: block;
   min-width: 320px;
   min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(0.75rem, 1.6vw, 1.5rem) var(--layout-gutter) clamp(1.5rem, 2.2vw, 2.5rem);
+  box-sizing: border-box;
 }
 
 h1 {
@@ -81,4 +89,29 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (max-width: 900px) {
+  h1 {
+    font-size: clamp(3.2rem, 12vw, 5rem);
+  }
+
+  h2 {
+    font-size: clamp(2rem, 8vw, 2.8rem);
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
+  }
+
+  p,
+  li {
+    font-size: clamp(1.05rem, 4vw, 1.25rem);
+  }
+}
+
+@media (min-width: 1920px) {
+  #root {
+    --layout-gutter: clamp(2rem, 3vw, 4rem);
+  }
 }
