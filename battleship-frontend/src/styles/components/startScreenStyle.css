@@ -1,7 +1,7 @@
 .start-screen {
-    width: min(100%, 1500px);
+    width: min(100%, 1760px);
     margin: 0 auto;
-    padding: clamp(0.8rem, 2.2vw, 2rem);
+    padding: clamp(1rem, 2.5vw, 2.4rem);
     box-sizing: border-box;
 }
 
@@ -15,7 +15,7 @@
     align-items: center;
     margin: 0 auto;
     gap: clamp(0.6rem, 1.6vw, 1.2rem);
-    width: min(100%, 1120px);
+    width: min(100%, 1320px);
     flex-wrap: wrap;
 }
 

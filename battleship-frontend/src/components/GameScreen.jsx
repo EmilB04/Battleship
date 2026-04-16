@@ -86,6 +86,25 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
     );
     const rowLabels = useMemo(() => Array.from({ length: BOARD_SIZE }, (_, i) => i + 1), [BOARD_SIZE]);
 
+    const playerSummary = useMemo(() => {
+        if (!winner) {
+            return null;
+        }
+
+        const shots = playerShots.length;
+        const hits = playerHits.length;
+        const accuracy = shots > 0 ? Math.round((hits / shots) * 100) : 0;
+
+        return {
+            shots,
+            hits,
+            misses: Math.max(0, shots - hits),
+            accuracy,
+            shipsSunk: botSunkShips.size,
+            winnerLabel: winner === 'player' ? 'You' : 'AI Bot'
+        };
+    }, [winner, playerShots.length, playerHits.length, botSunkShips.size]);
+
     // Helper: Reset battle state
     const resetBattleState = useCallback(() => {
         setPlayerShots([]);
@@ -261,9 +280,22 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
         setStatusText('Place all ships to begin.');
     }, [resetBattleState]);
 
+    const handleBackToMenu = useCallback(() => {
+        const isGameInProgress = !setup && !winner;
+        if (!isGameInProgress) {
+            GoBack();
+            return;
+        }
+
+        const shouldLeave = window.confirm('A game is currently in progress. Leave this battle and return to the main menu?');
+        if (shouldLeave) {
+            GoBack();
+        }
+    }, [setup, winner, GoBack]);
+
     return (
         <section className="game-screen">
-            <button className="back-to-menu-button" onClick={GoBack} title="Return to the main menu">
+            <button className="back-to-menu-button" onClick={handleBackToMenu} title="Return to the main menu">
                 <span className="back-arrow-icon" aria-hidden="true">←</span>
                 <span>Back to Menu</span>
             </button>
@@ -300,7 +332,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                         winner={winner}
                     />
 
-                    <div className="battle-boards">
+                    <div className={`battle-boards ${winner ? 'has-summary' : ''}`}>
                         <BattleBoard
                             boardType="player"
                             columnLabels={columnLabels}
@@ -314,6 +346,37 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                             onShoot={handlePlayerShot}
                             getCellKey={getCellKey}
                         />
+
+                        {playerSummary && (
+                            <section className="battle-summary-column" aria-live="polite">
+                                <p className="battle-summary-kicker">Battle Summary</p>
+                                <h3 className="battle-summary-title">Winner: {playerSummary.winnerLabel}</h3>
+                                <p className="battle-summary-subtitle">Player Stats</p>
+                                <ul className="battle-summary-list">
+                                    <li className="battle-summary-item">
+                                        <span className="battle-summary-label">Shots Fired</span>
+                                        <span className="battle-summary-value">{playerSummary.shots}</span>
+                                    </li>
+                                    <li className="battle-summary-item">
+                                        <span className="battle-summary-label">Hits</span>
+                                        <span className="battle-summary-value">{playerSummary.hits}</span>
+                                    </li>
+                                    <li className="battle-summary-item">
+                                        <span className="battle-summary-label">Misses</span>
+                                        <span className="battle-summary-value">{playerSummary.misses}</span>
+                                    </li>
+                                    <li className="battle-summary-item">
+                                        <span className="battle-summary-label">Accuracy</span>
+                                        <span className="battle-summary-value">{playerSummary.accuracy}%</span>
+                                    </li>
+                                    <li className="battle-summary-item">
+                                        <span className="battle-summary-label">Enemy Ships Sunk</span>
+                                        <span className="battle-summary-value">{playerSummary.shipsSunk}</span>
+                                    </li>
+                                </ul>
+                            </section>
+                        )}
+
                         <BattleBoard
                             boardType="enemy"
                             columnLabels={columnLabels}
@@ -329,7 +392,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                         />
                     </div>
 
-                    {winner && <BattleActions onNewBattle={handleNewBattle} />}
+                    {winner && <BattleActions onNewBattle={handleNewBattle} onQuit={GoBack} />}
                 </>
             )}
         </section>

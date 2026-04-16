@@ -10,8 +10,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --layout-max-width: 1800px;
-  --layout-gutter: clamp(0.85rem, 2vw, 2.5rem);
+  --layout-max-width: 2200px;
+  --layout-gutter: clamp(1rem, 2.2vw, 3.2rem);
 
   text-align: center;
 }
@@ -27,7 +27,7 @@ body {
   max-width: var(--layout-max-width);
   min-height: 100vh;
   margin: 0 auto;
-  padding: clamp(0.75rem, 1.6vw, 1.5rem) var(--layout-gutter) clamp(1.5rem, 2.2vw, 2.5rem);
+  padding: clamp(0.95rem, 1.9vw, 1.9rem) var(--layout-gutter) clamp(1.8rem, 2.7vw, 3rem);
   box-sizing: border-box;
 }
 
@@ -36,11 +36,11 @@ h1 {
   line-height: 1.1;
 }
 h2 {
-  font-size: 3.2rem;
+  font-size: clamp(3rem, 4.5vw, 4rem);
   line-height: 1.1;
 }
 h3 {
-  font-size: 2.4rem;
+  font-size: clamp(2.2rem, 3.3vw, 3rem);
   line-height: 1.1;
 }
 h4 {
@@ -52,7 +52,7 @@ h5 {
   line-height: 1.1;
 }
 p {
-  font-size: 1.4rem;
+  font-size: clamp(1.2rem, 1.45vw, 1.55rem);
   line-height: 1.5;
   margin-bottom: 1.5rem;
 }
@@ -112,6 +112,6 @@ button:focus-visible {
 
 @media (min-width: 1920px) {
   #root {
-    --layout-gutter: clamp(2rem, 3vw, 4rem);
+    --layout-gutter: clamp(2.3rem, 3.3vw, 5rem);
   }
 }
