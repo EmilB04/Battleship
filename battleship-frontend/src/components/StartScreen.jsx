@@ -1,8 +1,9 @@
 import '../styles/components/startScreenStyle.css';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import HowToPlayScreen from './HowToPlayScreen';
 import SettingsScreen from './SettingsScreen';
 import Leaderboard from './Leaderboard';
+import useGlobalEscape from '../hooks/useGlobalEscape';
 
 const MENU_ANIMATION_MS = 260;
 
@@ -105,6 +106,34 @@ export default function StartScreen({
             handleUsernameSubmit();
         }
     };
+
+    const handleGlobalEscape = useCallback(() => {
+        if (showUsernamePrompt && !isUsernamePromptClosing) {
+            handleCloseUsernamePrompt();
+            return;
+        }
+
+        if (showSettings && !isSettingsClosing) {
+            handleCloseSettings();
+            return;
+        }
+
+        if (showHowToPlay && !isHowToPlayClosing) {
+            handleCloseHowToPlay();
+        }
+    }, [
+        showUsernamePrompt,
+        isUsernamePromptClosing,
+        showSettings,
+        isSettingsClosing,
+        showHowToPlay,
+        isHowToPlayClosing,
+        handleCloseUsernamePrompt,
+        handleCloseSettings,
+        handleCloseHowToPlay
+    ]);
+
+    useGlobalEscape(handleGlobalEscape, showUsernamePrompt || showSettings || showHowToPlay);
 
     return (
         <>
