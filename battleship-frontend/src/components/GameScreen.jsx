@@ -329,7 +329,7 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
                         />
                     </div>
 
-                    <BattleActions onNewBattle={handleNewBattle} />
+                    {winner && <BattleActions onNewBattle={handleNewBattle} />}
                 </>
             )}
         </section>

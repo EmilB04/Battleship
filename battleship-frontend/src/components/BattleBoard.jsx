@@ -12,9 +12,10 @@ export default function BattleBoard({
     getCellKey
 }) {
     const isEnemyBoard = boardType === 'enemy';
+    const isActiveBoard = isEnemyBoard ? turn === 'player' : turn === 'bot';
 
     return (
-        <section className="battle-board-wrap">
+        <section className={`battle-board-wrap ${isActiveBoard ? 'is-active' : 'is-inactive'}`}>
             <h3>{isEnemyBoard ? 'Enemy Waters' : 'Your Fleet'}</h3>
             <table className="game-board">
                 <tbody>
