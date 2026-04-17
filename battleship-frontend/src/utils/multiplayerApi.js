@@ -1,16 +1,33 @@
 const PRIMARY_API_BASE = '/api/multiplayer';
 const LOCALHOST_API_BASE = 'http://localhost:8788/api/multiplayer';
 
+class MultiplayerApiError extends Error {
+    constructor(message, status) {
+        super(message);
+        this.name = 'MultiplayerApiError';
+        this.status = status;
+    }
+}
+
 const fetchFromBase = async (baseUrl, pathSuffix = '', init = {}) => {
     const response = await fetch(`${baseUrl}${pathSuffix}`, init);
     const payload = await response.json().catch(() => ({}));
 
     if (!response.ok) {
         const message = payload?.error || `Request failed with status ${response.status}`;
-        throw new Error(message);
+        throw new MultiplayerApiError(message, response.status);
     }
 
     return payload;
+};
+
+const shouldFallbackToLocalhost = (error) => {
+    if (error instanceof MultiplayerApiError) {
+        return error.status >= 500;
+    }
+
+    // Network-level failures (e.g. TypeError: Failed to fetch) should still try localhost.
+    return true;
 };
 
 const requestWithFallback = async (pathSuffix, init) => {
@@ -18,6 +35,10 @@ const requestWithFallback = async (pathSuffix, init) => {
         const data = await fetchFromBase(PRIMARY_API_BASE, pathSuffix, init);
         return { data, source: 'd1' };
     } catch (primaryError) {
+        if (!shouldFallbackToLocalhost(primaryError)) {
+            throw primaryError;
+        }
+
         try {
             const data = await fetchFromBase(LOCALHOST_API_BASE, pathSuffix, init);
             return { data, source: 'localhost' };

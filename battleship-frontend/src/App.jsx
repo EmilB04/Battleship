@@ -10,7 +10,6 @@ import {
   createLeaderboardEntryRemote,
   deleteLeaderboardEntryRemote,
   fetchLeaderboardEntries,
-  normalizeLeaderboardEntries,
 } from './utils/leaderboardApi';
 
 function App() {
@@ -44,12 +43,10 @@ function App() {
 
   const persistLeaderboard = useCallback((entry) => {
     createLeaderboardEntryRemote(entry)
-      .then(({ entry: savedEntry, source }) => {
+      .then(async ({ source }) => {
         setStatusFromSource(source);
-        setLeaderboard((prevEntries) => {
-          const withoutDuplicate = prevEntries.filter((item) => item.id !== savedEntry.id);
-          return normalizeLeaderboardEntries([savedEntry, ...withoutDuplicate]);
-        });
+        const { entries } = await fetchLeaderboardEntries();
+        setLeaderboard(entries);
       })
       .catch((error) => {
         console.error('Failed to persist leaderboard entry:', error);

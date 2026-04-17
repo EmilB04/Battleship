@@ -3,6 +3,10 @@ import { MAX_LEADERBOARD_ENTRIES } from '../constants/gameConstants';
 const PRIMARY_API_BASE = '/api/leaderboard';
 const LOCALHOST_API_BASE = 'http://localhost:8788/api/leaderboard';
 
+const getLeaderboardKey = (entry) => {
+    return [entry.username, entry.difficulty, entry.gridSize].join('|');
+};
+
 const isValidEntry = (entry) => {
     if (!entry || typeof entry !== 'object') {
         return false;
@@ -23,9 +27,23 @@ export const normalizeLeaderboardEntries = (entries) => {
         return [];
     }
 
-    return entries
+    const sortedEntries = [...entries]
         .filter(isValidEntry)
-        .sort((a, b) => b.score - a.score || Date.parse(b.timestamp) - Date.parse(a.timestamp))
+        .sort((a, b) => b.score - a.score || Date.parse(b.timestamp) - Date.parse(a.timestamp));
+    const dedupedEntries = [];
+    const seenKeys = new Set();
+
+    for (const entry of sortedEntries) {
+        const key = getLeaderboardKey(entry);
+        if (seenKeys.has(key)) {
+            continue;
+        }
+
+        seenKeys.add(key);
+        dedupedEntries.push(entry);
+    }
+
+    return dedupedEntries
         .slice(0, MAX_LEADERBOARD_ENTRIES);
 };
 

@@ -221,7 +221,7 @@ export async function onRequestPost(context) {
             .bind(
                 winnerValue,
                 now,
-                now,
+                nextExpiry,
                 pin
             )
             .run();

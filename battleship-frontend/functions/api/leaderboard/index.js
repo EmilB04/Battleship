@@ -1,5 +1,7 @@
 const MAX_LEADERBOARD_ENTRIES = 15;
 
+const LEADERBOARD_ORDER_BY = 'score DESC, timestamp DESC, id DESC';
+
 const createJsonResponse = (data, status = 200) => {
     return new Response(JSON.stringify(data), {
         status,
@@ -59,29 +61,54 @@ const parseEntryPayload = (raw) => {
     };
 };
 
+const cleanupDuplicateEntries = async (db) => {
+    await db.prepare(
+        `DELETE FROM leaderboard_entries
+         WHERE id IN (
+             SELECT id FROM (
+                 SELECT
+                     id,
+                     ROW_NUMBER() OVER (
+                         PARTITION BY username, difficulty, grid_size
+                         ORDER BY score DESC, timestamp DESC, id DESC
+                     ) AS row_number
+                 FROM leaderboard_entries
+             )
+             WHERE row_number > 1
+         )`
+    ).run();
+};
+
+const fetchUniqueLeaderboardEntries = async (db) => {
+    await cleanupDuplicateEntries(db);
+
+    const { results } = await db.prepare(
+        `SELECT
+            id,
+            timestamp,
+            username,
+            result,
+            difficulty,
+            grid_size AS gridSize,
+            score,
+            player_shots AS playerShots,
+            accuracy
+         FROM leaderboard_entries
+         ORDER BY ${LEADERBOARD_ORDER_BY}
+         LIMIT ?`
+    )
+        .bind(MAX_LEADERBOARD_ENTRIES)
+        .all();
+
+    return results || [];
+};
+
 export async function onRequestGet(context) {
     const { env } = context;
 
     try {
-        const { results } = await env.DB.prepare(
-            `SELECT
-                id,
-                timestamp,
-                username,
-                result,
-                difficulty,
-                grid_size AS gridSize,
-                score,
-                player_shots AS playerShots,
-                accuracy
-             FROM leaderboard_entries
-             ORDER BY score DESC, timestamp DESC
-             LIMIT ?`
-        )
-            .bind(MAX_LEADERBOARD_ENTRIES)
-            .all();
-
-        return createJsonResponse({ entries: results || [] });
+        const entries = await fetchUniqueLeaderboardEntries(env.DB);
+        return createJsonResponse({ entries });
     } catch (error) {
         return createJsonResponse(
             { error: 'Failed to load leaderboard entries', details: String(error) },
@@ -126,7 +153,9 @@ export async function onRequestPost(context) {
             )
             .run();
 
-        return createJsonResponse({ entry }, 201);
+        const entries = await fetchUniqueLeaderboardEntries(env.DB);
+
+        return createJsonResponse({ entry, entries }, 201);
     } catch (error) {
         return createJsonResponse(
             { error: 'Failed to save leaderboard entry', details: String(error) },
