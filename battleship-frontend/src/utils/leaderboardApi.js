@@ -3,6 +3,14 @@ import { MAX_LEADERBOARD_ENTRIES } from '../constants/gameConstants';
 const PRIMARY_API_BASE = '/api/leaderboard';
 const LOCALHOST_API_BASE = 'http://localhost:8788/api/leaderboard';
 
+class LeaderboardApiError extends Error {
+    constructor(message, status) {
+        super(message);
+        this.name = 'LeaderboardApiError';
+        this.status = status;
+    }
+}
+
 const getLeaderboardKey = (entry) => {
     return [entry.username, entry.difficulty, entry.gridSize].join('|');
 };
@@ -51,11 +59,19 @@ const fetchFromBase = async (baseUrl, pathSuffix, init) => {
     const response = await fetch(`${baseUrl}${pathSuffix}`, init);
 
     if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
+        throw new LeaderboardApiError(`Request failed with status ${response.status}`, response.status);
     }
 
     const data = await response.json();
     return data;
+};
+
+const shouldFallbackToLocalhost = (error) => {
+    if (error instanceof LeaderboardApiError) {
+        return error.status >= 500;
+    }
+
+    return true;
 };
 
 const requestWithFallback = async (pathSuffix, init) => {
@@ -63,6 +79,10 @@ const requestWithFallback = async (pathSuffix, init) => {
         const data = await fetchFromBase(PRIMARY_API_BASE, pathSuffix, init);
         return { data, source: 'd1' };
     } catch (primaryError) {
+        if (!shouldFallbackToLocalhost(primaryError)) {
+            throw primaryError;
+        }
+
         try {
             const data = await fetchFromBase(LOCALHOST_API_BASE, pathSuffix, init);
             return { data, source: 'localhost' };
