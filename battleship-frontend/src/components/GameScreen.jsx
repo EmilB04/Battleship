@@ -25,6 +25,7 @@ import { getAIShot } from '../utils/aiStrategies';
 export default function GameScreen({ GoBack, persistLeaderboard, username }) {
     // Game state
     const [boardSize, setBoardSize] = useState(() => parseInt(localStorage.getItem(GRID_SIZE_STORAGE_KEY) || '10', 10));
+    const [difficulty, setDifficulty] = useState(() => localStorage.getItem(DIFFICULTY_STORAGE_KEY) || 'medium');
     const BOARD_SIZE = boardSize;
     
     const [setup, setSetup] = useState(true);
@@ -47,23 +48,14 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
     const [statusText, setStatusText] = useState('Place all ships to begin.');
     const [aiTargetQueue, setAiTargetQueue] = useState([]);
 
-    // Listen for grid size changes
+    // Persist setup preferences
     useEffect(() => {
-        const handleGridSizeChange = () => {
-            const newSize = parseInt(localStorage.getItem(GRID_SIZE_STORAGE_KEY) || '10', 10);
-            setBoardSize(newSize);
-            if (!setup) {
-                setSetup(true);
-                setStatusText('Place all ships to begin.');
-            }
-        };
+        localStorage.setItem(GRID_SIZE_STORAGE_KEY, String(boardSize));
+    }, [boardSize]);
 
-        window.addEventListener('gridSizeChanged', handleGridSizeChange);
-        return () => window.removeEventListener('gridSizeChanged', handleGridSizeChange);
-    }, [setup]);
-
-    // Memoized values
-    const difficulty = useMemo(() => localStorage.getItem(DIFFICULTY_STORAGE_KEY) || 'medium', []);
+    useEffect(() => {
+        localStorage.setItem(DIFFICULTY_STORAGE_KEY, difficulty);
+    }, [difficulty]);
     
     const playerShotsSet = useMemo(() => new Set(playerShots), [playerShots]);
     const botShotsSet = useMemo(() => new Set(botShots), [botShots]);
@@ -295,34 +287,84 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
         }
     }, [setup, winner, GoBack]);
 
+    const handleBoardSizeChange = useCallback((event) => {
+        const nextSize = parseInt(event.target.value, 10);
+        if (Number.isNaN(nextSize) || nextSize === boardSize) {
+            return;
+        }
+
+        setBoardSize(nextSize);
+        setPlacedShips([]);
+        setSelectedShip(null);
+        setStatusText('Place all ships to begin.');
+    }, [boardSize]);
+
+    const handleDifficultyChange = useCallback((event) => {
+        setDifficulty(event.target.value);
+    }, []);
+
     return (
-        <section className="game-screen">
+        <section className={`game-screen ${setup ? 'is-setup' : ''}`}>
             <button className="back-to-menu-button" onClick={handleBackToMenu} title="Return to the main menu">
                 <span className="back-arrow-icon" aria-hidden="true">←</span>
                 <span>Back to Menu</span>
             </button>
 
             {setup && (
-                <>
-                    <h2>Place Your Ships</h2>
-                    <p>Drag ships to the board or click to place. Right-click placed ships to remove them.</p>
-                    <Ships
-                        selectedShip={selectedShip}
-                        setSelectedShip={setSelectedShip}
-                        orientation={orientation}
-                        setOrientation={setOrientation}
-                        placedShips={placedShips}
-                    />
-                    <Board
-                        boardSize={BOARD_SIZE}
-                        selectedShip={selectedShip}
-                        setSelectedShip={setSelectedShip}
-                        orientation={orientation}
-                        placedShips={placedShips}
-                        setPlacedShips={setPlacedShips}
-                        onFinishSetup={handleStartBattle}
-                    />
-                </>
+                <div className="setup-stage">
+                    <div className="setup-controls">
+                        <div className="setup-header">
+                            <h2>Place Your Ships</h2>
+                            <p>Drag ships to the board or click to place. Right-click placed ships to remove them.</p>
+                        </div>
+                        <div className="setup-options" aria-label="Game setup options">
+                            <div className="setup-option">
+                                <label htmlFor="setup-grid-size">Grid Size</label>
+                                <select
+                                    id="setup-grid-size"
+                                    value={String(boardSize)}
+                                    onChange={handleBoardSizeChange}
+                                >
+                                    <option value="8">8x8</option>
+                                    <option value="10">10x10 (Standard)</option>
+                                    <option value="12">12x12</option>
+                                </select>
+                            </div>
+                            <div className="setup-option">
+                                <label htmlFor="setup-difficulty">AI Difficulty</label>
+                                <select
+                                    id="setup-difficulty"
+                                    value={difficulty}
+                                    onChange={handleDifficultyChange}
+                                >
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                    <option value="extreme">Extreme</option>
+                                </select>
+                            </div>
+                        </div>
+                        <Ships
+                            selectedShip={selectedShip}
+                            setSelectedShip={setSelectedShip}
+                            orientation={orientation}
+                            setOrientation={setOrientation}
+                            placedShips={placedShips}
+                        />
+                    </div>
+                    <div className="setup-board-stage">
+                        <Board
+                            boardSize={BOARD_SIZE}
+                            selectedShip={selectedShip}
+                            setSelectedShip={setSelectedShip}
+                            orientation={orientation}
+                            setOrientation={setOrientation}
+                            placedShips={placedShips}
+                            setPlacedShips={setPlacedShips}
+                            onFinishSetup={handleStartBattle}
+                        />
+                    </div>
+                </div>
             )}
 
             {!setup && (

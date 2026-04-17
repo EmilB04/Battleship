@@ -115,3 +115,40 @@ button:focus-visible {
     --layout-gutter: clamp(2.3rem, 3.3vw, 5rem);
   }
 }
+
+@media (max-height: 980px) and (min-width: 900px) {
+  #root {
+    padding-top: clamp(0.35rem, 0.75vw, 0.8rem);
+    padding-bottom: clamp(0.6rem, 1vw, 1.1rem);
+    gap: clamp(0.45rem, 0.9vh, 0.8rem);
+  }
+}
+
+@media (min-width: 900px) {
+  html.game-active,
+  body.game-active {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  body.game-active #root {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    padding-top: clamp(0.2rem, 0.45vw, 0.45rem);
+    padding-bottom: clamp(0.2rem, 0.45vw, 0.45rem);
+  }
+}
+
+@media (max-width: 899px) {
+  html.game-active,
+  body.game-active,
+  body.game-active #root {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow: auto;
+  }
+}

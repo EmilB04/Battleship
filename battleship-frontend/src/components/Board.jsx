@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import '../styles/components/boardStyle.css';
 import { getShipCells, isValidShipPlacement } from '../utils/shipUtils';
 
-export default function Board({ boardSize = 10, selectedShip, setSelectedShip, orientation, placedShips = [], setPlacedShips, onFinishSetup }) {
+export default function Board({ boardSize = 10, selectedShip, setSelectedShip, orientation, setOrientation, placedShips = [], setPlacedShips, onFinishSetup }) {
     const BOARD_SIZE = boardSize;
-    const [hoveredCells, setHoveredCells] = useState([]);
+    const [hoverAnchor, setHoverAnchor] = useState(null);
     const facingLabel = orientation === 'horizontal' ? 'Horizontal' : 'Vertical';
     const facingArrow = orientation === 'horizontal' ? '↔' : '↕';
 
@@ -33,16 +33,21 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
     };
 
     // Check if a position is valid for placing a ship
-    const isValidPlacement = (row, col, ship, orientation) => {
+    const isValidPlacement = useCallback((row, col, ship, orientation) => {
         if (!ship) return false;
         const candidateShip = { ...ship, row, col, orientation };
         return isValidShipPlacement(placedShips, candidateShip, BOARD_SIZE);
-    };
+    }, [placedShips, BOARD_SIZE]);
 
-    // Get preview cells when hovering
-    const getPreviewCells = (row, col) => {
-        if (!selectedShip) return [];
-        if (!isValidPlacement(row, col, selectedShip, orientation)) return [];
+    const hoveredCells = useMemo(() => {
+        if (!selectedShip || !hoverAnchor) {
+            return [];
+        }
+
+        const { row, col } = hoverAnchor;
+        if (!isValidPlacement(row, col, selectedShip, orientation)) {
+            return [];
+        }
 
         const cells = [];
         for (let i = 0; i < selectedShip.length; i++) {
@@ -52,18 +57,18 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                 cells.push(`${row + i}-${col}`);
             }
         }
+
         return cells;
-    };
+    }, [selectedShip, hoverAnchor, orientation, isValidPlacement]);
 
     // Handle cell hover
     const handleCellMouseEnter = (row, col) => {
         if (!selectedShip) return;
-        const preview = getPreviewCells(row, col);
-        setHoveredCells(preview);
+        setHoverAnchor({ row, col });
     };
 
     const handleCellMouseLeave = () => {
-        setHoveredCells([]);
+        setHoverAnchor(null);
     };
 
     // Handle cell click to place ship
@@ -78,6 +83,7 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                 orientation
             };
             setPlacedShips([...placedShips, newShip]);
+            setHoverAnchor(null);
             setSelectedShip(null);
         }
     };
@@ -86,14 +92,13 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
     const handleDragOver = (e, row, col) => {
         e.preventDefault();
         if (!selectedShip) return;
-        const preview = getPreviewCells(row, col);
-        setHoveredCells(preview);
+        setHoverAnchor({ row, col });
     };
 
     const handleDrop = (e, row, col) => {
         e.preventDefault();
         handleCellClick(row, col);
-        setHoveredCells([]);
+        setHoverAnchor(null);
     };
 
     // Handle right-click or double-click to remove ship
@@ -105,6 +110,16 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
     const handleCellDoubleClick = (row, col) => {
         removeShipAtCell(row, col);
     };
+
+    const handleBoardWheel = useCallback((e) => {
+        e.preventDefault();
+
+        if (!setOrientation || e.deltaY === 0) {
+            return;
+        }
+
+        setOrientation(e.deltaY < 0 ? 'horizontal' : 'vertical');
+    }, [setOrientation]);
 
     const removeShipAtCell = (row, col) => {
         const shipToRemove = placedShips.find(ship => {
@@ -126,7 +141,7 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
     };
 
     return (
-        <section className="board-screen">
+        <section className="board-screen" onWheel={handleBoardWheel}>
             <div className="board-placement-area">
                 <div className="board-direction board-direction-left" aria-hidden="true">
                     <span className="board-direction-label">Facing</span>
@@ -134,7 +149,7 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                     <span className="board-direction-text">{facingLabel}</span>
                 </div>
 
-                <table className="game-board">
+                <table className="game-board" style={{ '--grid-size': BOARD_SIZE }}>
                     <tbody>
                         {/* Header row with column labels */}
                         <tr>
@@ -158,13 +173,15 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                                     const isHovered = hoveredCells.includes(cellKey);
                                     const isOccupied = isCellOccupied(rowIndex, colIndex);
                                     const ship = getShipAtCell(rowIndex, colIndex);
+                                    const isPreviewPlacement = isHovered && !isOccupied && Boolean(selectedShip);
                                     
                                     return (
                                         <td
                                             key={cellKey}
-                                            className={`board-cell ${isOccupied ? 'occupied' : ''} ${isHovered ? 'hover-preview' : ''}`}
+                                            className={`board-cell ${isOccupied ? 'occupied' : ''} ${isHovered ? 'hover-preview' : ''} ${isPreviewPlacement ? 'preview-placement' : ''}`}
                                             style={{
-                                                backgroundColor: isOccupied && ship ? ship.color : undefined
+                                                backgroundColor: isOccupied && ship ? ship.color : undefined,
+                                                '--preview-ship-color': isPreviewPlacement && selectedShip ? selectedShip.color : undefined
                                             }}
                                             onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                                             onMouseLeave={handleCellMouseLeave}
@@ -174,9 +191,11 @@ export default function Board({ boardSize = 10, selectedShip, setSelectedShip, o
                                             onDragOver={(e) => handleDragOver(e, rowIndex, colIndex)}
                                             onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
                                         >
-                                            {isOccupied && ship && (
-                                                <span className="ship-label">{ship.label}</span>
-                                            )}
+                                            {(isOccupied && ship) || isPreviewPlacement ? (
+                                                <span className={`ship-label ${isPreviewPlacement ? 'ship-label-preview' : ''}`}>
+                                                    {isOccupied && ship ? ship.label : selectedShip.label}
+                                                </span>
+                                            ) : null}
                                         </td>
                                     );
                                 })}

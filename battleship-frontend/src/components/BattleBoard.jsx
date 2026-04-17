@@ -83,6 +83,7 @@ export default function BattleBoard({
     const hasTrackedSunkShipsRef = useRef(false);
     const isEnemyBoard = boardType === 'enemy';
     const isActiveBoard = isEnemyBoard ? turn === 'player' : turn === 'bot';
+    const revealEnemyFleet = isEnemyBoard && Boolean(winner);
     const shipTemplateById = useMemo(() => new Map(SHIP_TEMPLATES.map((ship) => [ship.id, ship])), []);
     const remainingShips = SHIP_TEMPLATES.filter((ship) => !sunkShips.has(ship.id));
     const panelClassName = isEnemyBoard ? 'ships-remaining-panel panel-right' : 'ships-remaining-panel panel-left';
@@ -176,7 +177,7 @@ export default function BattleBoard({
                                         const wasHit = hitSet.has(key);
                                         const shipId = shipMap.get(key);
                                         const isSunk = shipId ? sunkShips.has(shipId) : false;
-                                        const showShip = !isEnemyBoard && Boolean(shipId);
+                                        const showShip = (!isEnemyBoard || revealEnemyFleet) && Boolean(shipId);
                                         const shipColor = shipId ? shipTemplateById.get(shipId)?.color : undefined;
                                         const isExploding = explodingCells.has(key);
 
