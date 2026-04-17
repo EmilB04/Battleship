@@ -1,6 +1,8 @@
 import {
     cleanupExpiredRooms,
     createJsonResponse,
+    ensureDatabaseBinding,
+    ensureMultiplayerSchema,
     formatRoomState,
     getPlayerSlot
 } from '../_shared.js';
@@ -22,6 +24,14 @@ const createEventChunk = (eventName, payload) => {
 
 export async function onRequestGet(context) {
     const { env, params, request } = context;
+
+    try {
+        const db = ensureDatabaseBinding(env);
+        await ensureMultiplayerSchema(db);
+    } catch (error) {
+        return createJsonResponse({ error: String(error) }, 500);
+    }
+
     await cleanupExpiredRooms(env.DB);
 
     const pin = String(params?.pin || '').trim();

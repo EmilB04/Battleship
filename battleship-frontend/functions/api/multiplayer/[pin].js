@@ -1,9 +1,12 @@
 import {
     cleanupExpiredRooms,
     createJsonResponse,
+    ensureDatabaseBinding,
+    ensureMultiplayerSchema,
     formatRoomState,
     getExpiryIso,
     getPlayerSlot,
+    hasRematchColumns,
     isFleetDefeatedByShots,
     nowIso,
     serializeJson,
@@ -32,6 +35,14 @@ const getRoomByPin = async (db, pin) => {
 
 export async function onRequestGet(context) {
     const { env, params, request } = context;
+
+    try {
+        const db = ensureDatabaseBinding(env);
+        await ensureMultiplayerSchema(db);
+    } catch (error) {
+        return createJsonResponse({ error: String(error) }, 500);
+    }
+
     await cleanupExpiredRooms(env.DB);
 
     const pin = String(params?.pin || '').trim();
@@ -56,7 +67,16 @@ export async function onRequestGet(context) {
 
 export async function onRequestPost(context) {
     const { env, params, request } = context;
+
+    try {
+        const db = ensureDatabaseBinding(env);
+        await ensureMultiplayerSchema(db);
+    } catch (error) {
+        return createJsonResponse({ error: String(error) }, 500);
+    }
+
     await cleanupExpiredRooms(env.DB);
+    const rematchSupported = await hasRematchColumns(env.DB);
 
     const pin = String(params?.pin || '').trim();
     if (!/^\d{6}$/.test(pin)) {
@@ -106,8 +126,7 @@ export async function onRequestPost(context) {
         await env.DB.prepare(
             `UPDATE multiplayer_rooms
              SET ${fleetColumn} = ?,
-                 player1_rematch_ready = 0,
-                 player2_rematch_ready = 0,
+                 ${rematchSupported ? 'player1_rematch_ready = 0, player2_rematch_ready = 0,' : ''}
                  updated_at = ?,
                  expires_at = ?
              WHERE pin = ?`
@@ -171,8 +190,7 @@ export async function onRequestPost(context) {
         await env.DB.prepare(
             `UPDATE multiplayer_rooms
              SET ${shotsColumn} = ?,
-                 player1_rematch_ready = 0,
-                 player2_rematch_ready = 0,
+                 ${rematchSupported ? 'player1_rematch_ready = 0, player2_rematch_ready = 0,' : ''}
                  turn = ?,
                  winner = ?,
                  status = ?,
@@ -208,6 +226,10 @@ export async function onRequestPost(context) {
     }
 
     if (action === 'rematch') {
+        if (!rematchSupported) {
+            return createJsonResponse({ error: 'Rematch requires migration 0003_add_multiplayer_rematch_flags.sql to be applied.' }, 409);
+        }
+
         if (state.status !== 'finished') {
             return createJsonResponse({ error: 'Rematch is only available after the game ends.' }, 409);
         }

@@ -3,8 +3,11 @@ import {
     createJsonResponse,
     createPinCode,
     createPlayerId,
+    ensureDatabaseBinding,
+    ensureMultiplayerSchema,
     formatRoomState,
     getExpiryIso,
+    hasRematchColumns,
     normalizeBoardSize,
     nowIso,
     sanitizeUsername,
@@ -13,7 +16,7 @@ import {
 
 const MAX_PIN_ATTEMPTS = 25;
 
-const createRoom = async (env, username, boardSize) => {
+const createRoom = async (env, username, boardSize, rematchSupported) => {
     const player1Id = createPlayerId();
     const createdAt = nowIso();
     const expiresAt = getExpiryIso();
@@ -38,11 +41,9 @@ const createRoom = async (env, username, boardSize) => {
                     player2_name,
                     player1_fleet_json,
                     player2_fleet_json,
-                    player1_shots_json,
-                          player2_shots_json,
-                          player1_rematch_ready,
-                          player2_rematch_ready
-                      ) VALUES (?, ?, ?, ?, 'waiting', ?, NULL, NULL, ?, ?, NULL, NULL, NULL, NULL, ?, ?, 0, 0)`
+                          player1_shots_json,
+                          player2_shots_json${rematchSupported ? ', player1_rematch_ready, player2_rematch_ready' : ''}
+                      ) VALUES (?, ?, ?, ?, 'waiting', ?, NULL, NULL, ?, ?, NULL, NULL, NULL, NULL, ?, ?${rematchSupported ? ', 0, 0' : ''})`
             )
                 .bind(pin, createdAt, createdAt, expiresAt, boardSize, player1Id, username, serializeJson([]), serializeJson([]))
                 .run();
@@ -91,6 +92,13 @@ const joinRoom = async (env, pin, username) => {
 export async function onRequestPost(context) {
     const { request, env } = context;
 
+    try {
+        const db = ensureDatabaseBinding(env);
+        await ensureMultiplayerSchema(db);
+    } catch (error) {
+        return createJsonResponse({ error: String(error) }, 500);
+    }
+
     await cleanupExpiredRooms(env.DB);
 
     let payload;
@@ -108,9 +116,11 @@ export async function onRequestPost(context) {
     }
 
     try {
+        const rematchSupported = await hasRematchColumns(env.DB);
+
         if (action === 'create') {
             const boardSize = normalizeBoardSize(payload?.boardSize);
-            const result = await createRoom(env, username, boardSize);
+            const result = await createRoom(env, username, boardSize, rematchSupported);
             return createJsonResponse(result, 201);
         }
 

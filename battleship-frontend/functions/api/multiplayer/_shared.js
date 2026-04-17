@@ -2,6 +2,47 @@ const ROOM_PIN_LENGTH = 6;
 const DEFAULT_BOARD_SIZE = 10;
 const ROOM_TTL_HOURS = 24;
 
+export const ensureDatabaseBinding = (env) => {
+    if (!env?.DB) {
+        throw new Error('D1 database binding `DB` is not configured for this environment.');
+    }
+
+    return env.DB;
+};
+
+export const ensureMultiplayerSchema = async (db) => {
+    await db.prepare(
+        `CREATE TABLE IF NOT EXISTS multiplayer_rooms (
+            pin TEXT PRIMARY KEY,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            expires_at TEXT NOT NULL,
+            status TEXT NOT NULL,
+            board_size INTEGER NOT NULL,
+            turn TEXT,
+            winner TEXT,
+            player1_id TEXT NOT NULL,
+            player1_name TEXT NOT NULL,
+            player2_id TEXT,
+            player2_name TEXT,
+            player1_fleet_json TEXT,
+            player2_fleet_json TEXT,
+            player1_shots_json TEXT NOT NULL,
+            player2_shots_json TEXT NOT NULL
+        )`
+    ).run();
+
+    await db.prepare(
+        'CREATE INDEX IF NOT EXISTS idx_multiplayer_rooms_expires ON multiplayer_rooms (expires_at)'
+    ).run();
+};
+
+export const hasRematchColumns = async (db) => {
+    const { results } = await db.prepare('PRAGMA table_info(multiplayer_rooms)').all();
+    const columnNames = new Set((results || []).map((column) => column.name));
+    return columnNames.has('player1_rematch_ready') && columnNames.has('player2_rematch_ready');
+};
+
 export const createJsonResponse = (data, status = 200) => {
     return new Response(JSON.stringify(data), {
         status,
@@ -80,13 +121,13 @@ export const formatRoomState = (roomRow) => {
             id: roomRow.player1_id,
             username: roomRow.player1_name,
             ready: Boolean(roomRow.player1_fleet_json),
-            rematchReady: Boolean(roomRow.player1_rematch_ready)
+            rematchReady: Boolean(roomRow.player1_rematch_ready || 0)
         },
         player2: {
             id: roomRow.player2_id,
             username: roomRow.player2_name,
             ready: Boolean(roomRow.player2_fleet_json),
-            rematchReady: Boolean(roomRow.player2_rematch_ready)
+            rematchReady: Boolean(roomRow.player2_rematch_ready || 0)
         },
         fleets: {
             player1: parseFleetJson(roomRow.player1_fleet_json),
