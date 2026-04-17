@@ -33,8 +33,60 @@ export default function StartScreen({
     const [multiplayerError, setMultiplayerError] = useState('');
     const [multiplayerLoading, setMultiplayerLoading] = useState(false);
     const [savedMultiplayerSession, setSavedMultiplayerSession] = useState(() => loadMultiplayerSession());
+    const [savedSessionStatus, setSavedSessionStatus] = useState(() => loadMultiplayerSession()?.status || '');
     const [resumeLoading, setResumeLoading] = useState(false);
     const closeTimersRef = useRef([]);
+
+    useEffect(() => {
+        const cachedSession = loadMultiplayerSession();
+        if (!cachedSession) {
+            setSavedMultiplayerSession(null);
+            setSavedSessionStatus('');
+            return;
+        }
+
+        setSavedMultiplayerSession(cachedSession);
+        setSavedSessionStatus(cachedSession.status || '');
+
+        let isCancelled = false;
+
+        const syncSessionStatus = async () => {
+            try {
+                const result = await resumeMultiplayerSession({
+                    pin: cachedSession.pin,
+                    playerId: cachedSession.playerId
+                });
+
+                if (isCancelled) {
+                    return;
+                }
+
+                const nextStatus = result?.room?.status || '';
+                saveMultiplayerSession({
+                    pin: cachedSession.pin,
+                    playerId: cachedSession.playerId,
+                    username: cachedSession.username,
+                    status: nextStatus
+                });
+                setSavedMultiplayerSession(loadMultiplayerSession());
+                setSavedSessionStatus(nextStatus);
+            } catch {
+                if (isCancelled) {
+                    return;
+                }
+
+                clearMultiplayerSession();
+                setSavedMultiplayerSession(null);
+                setSavedSessionStatus('');
+            }
+        };
+
+        syncSessionStatus();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -177,9 +229,11 @@ export default function StartScreen({
                 saveMultiplayerSession({
                     pin: result.room.pin,
                     playerId: result.playerId,
-                    username: trimmedUsername
+                    username: trimmedUsername,
+                    status: result.room?.status || ''
                 });
                 setSavedMultiplayerSession(loadMultiplayerSession());
+                setSavedSessionStatus(result.room?.status || '');
 
                 setShowMultiplayerPrompt(false);
                 StartGame(trimmedUsername, {
@@ -204,9 +258,11 @@ export default function StartScreen({
                 saveMultiplayerSession({
                     pin: result.room.pin,
                     playerId: result.playerId,
-                    username: trimmedUsername
+                    username: trimmedUsername,
+                    status: result.room?.status || ''
                 });
                 setSavedMultiplayerSession(loadMultiplayerSession());
+                setSavedSessionStatus(result.room?.status || '');
 
                 setShowMultiplayerPrompt(false);
                 StartGame(trimmedUsername, {
@@ -236,12 +292,21 @@ export default function StartScreen({
         if (!session) {
             clearMultiplayerSession();
             setSavedMultiplayerSession(null);
+            setSavedSessionStatus('');
             return;
         }
 
         setResumeLoading(true);
         try {
             const result = await resumeMultiplayerSession({ pin: session.pin, playerId: session.playerId });
+            saveMultiplayerSession({
+                pin: session.pin,
+                playerId: session.playerId,
+                username: session.username,
+                status: result.room?.status || ''
+            });
+            setSavedMultiplayerSession(loadMultiplayerSession());
+            setSavedSessionStatus(result.room?.status || '');
             StartGame(session.username, {
                 mode: 'multiplayer',
                 session: {
@@ -253,6 +318,7 @@ export default function StartScreen({
         } catch {
             clearMultiplayerSession();
             setSavedMultiplayerSession(null);
+            setSavedSessionStatus('');
         } finally {
             setResumeLoading(false);
         }
@@ -280,6 +346,12 @@ export default function StartScreen({
                             <button className="start-button" onClick={handleResumeMultiplayer} disabled={resumeLoading}>
                                 <FaUsers className="start-mode-icon" aria-hidden="true" focusable="false" />
                                 <span>{resumeLoading ? 'Resuming...' : `Resume Room ${savedMultiplayerSession.pin}`}</span>
+                                {savedSessionStatus === 'playing' && (
+                                    <span className="resume-live-chip" aria-label="Live ongoing game">
+                                        <span className="resume-live-dot" aria-hidden="true"></span>
+                                        <span>LIVE</span>
+                                    </span>
+                                )}
                             </button>
                         </li>
                     )}

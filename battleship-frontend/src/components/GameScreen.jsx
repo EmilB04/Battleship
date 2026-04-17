@@ -312,11 +312,15 @@ function SingleplayerGameScreen({ GoBack, persistLeaderboard, username }) {
         setDifficulty(event.target.value);
     }, []);
 
+    const isSingleplayerInProgress = !setup && !winner;
+    const backButtonLabel = isSingleplayerInProgress ? 'Forfeit' : 'Back to Menu';
+    const backButtonTitle = isSingleplayerInProgress ? 'Forfeit this battle and return to the main menu' : 'Return to the main menu';
+
     return (
         <section className={`game-screen ${setup ? 'is-setup' : ''}`}>
-            <button className="back-to-menu-button" onClick={handleBackToMenu} title="Return to the main menu">
+            <button className="back-to-menu-button" onClick={handleBackToMenu} title={backButtonTitle}>
                 <span className="back-arrow-icon" aria-hidden="true">←</span>
-                <span>Back to Menu</span>
+                <span>{backButtonLabel}</span>
             </button>
 
             {setup && (

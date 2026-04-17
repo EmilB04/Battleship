@@ -9,6 +9,7 @@ export const saveMultiplayerSession = (session) => {
         pin: String(session.pin || '').trim(),
         playerId: String(session.playerId || '').trim(),
         username: String(session.username || '').trim(),
+        status: String(session.status || '').trim().toLowerCase(),
         savedAt: new Date().toISOString()
     };
 
@@ -39,6 +40,7 @@ export const loadMultiplayerSession = () => {
             pin,
             playerId,
             username,
+            status: ['waiting', 'playing', 'finished'].includes(parsed?.status) ? parsed.status : '',
             savedAt: parsed?.savedAt || null
         };
     } catch {

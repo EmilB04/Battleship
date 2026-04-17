@@ -173,7 +173,8 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
             saveMultiplayerSession({
                 pin,
                 playerId,
-                username: username || meDisplayName || 'Player'
+                username: username || meDisplayName || 'Player',
+                status: result.room?.status || ''
             });
             setErrorText('');
         } catch (error) {
@@ -359,11 +360,15 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         return 'Want another round in the same room?';
     }, [winner, myRematchReady, enemyRematchReady]);
 
+    const isMultiplayerInProgress = room?.status === 'playing' && !winner;
+    const backButtonLabel = isMultiplayerInProgress ? 'Forfeit' : 'Back to Menu';
+    const backButtonTitle = isMultiplayerInProgress ? 'Forfeit this multiplayer battle and return to the main menu' : 'Return to the main menu';
+
     return (
         <section className={`game-screen ${!matchStarted ? 'is-setup' : ''}`}>
-            <button className="back-to-menu-button" onClick={handleBackToMenu} title="Return to the main menu">
+            <button className="back-to-menu-button" onClick={handleBackToMenu} title={backButtonTitle}>
                 <span className="back-arrow-icon" aria-hidden="true">←</span>
-                <span>Back to Menu</span>
+                <span>{backButtonLabel}</span>
             </button>
 
             <BattleStatus
