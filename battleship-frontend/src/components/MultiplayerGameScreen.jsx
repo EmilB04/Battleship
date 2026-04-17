@@ -156,6 +156,10 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         }
 
         if (room.status === 'finished') {
+            if (room.victoryReason === 'forfeit') {
+                return winner === 'player' ? 'Opponent left the room. You win by forfeit.' : 'You left the room. Defeat by forfeit.';
+            }
+
             return winner === 'player' ? 'You sank all enemy ships. Victory.' : 'Your fleet was sunk. Defeat.';
         }
 
@@ -376,9 +380,15 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
                 statusText={`${statusText}${streamConnected ? '' : ' (Reconnecting...)'}`}
                 turn={isMyTurn ? 'player' : 'bot'}
                 winner={winner}
-                headerTitle={`Multiplayer Room ${room?.pin || ''}`}
+                headerTitle={(
+                    <>
+                        Multiplayer Room{' '}
+                        <span className="multiplayer-room-pin-highlight">{room?.pin || '------'}</span>
+                    </>
+                )}
                 subtitleText={`You: ${meDisplayName || username} | Opponent: ${enemyDisplayName || 'Waiting...'}`}
                 turnLabel={isMyTurn ? 'You' : (enemyDisplayName || 'Opponent')}
+                showTurn={room?.status === 'playing'}
             />
 
             {errorText && <p className="battle-status" role="status">Error: {errorText}</p>}

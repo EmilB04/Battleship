@@ -111,12 +111,23 @@ export const formatRoomState = (roomRow) => {
         return null;
     }
 
+    const rawWinner = typeof roomRow.winner === 'string' ? roomRow.winner : null;
+    let winner = rawWinner;
+    let victoryReason = rawWinner ? 'sunk' : null;
+
+    if (rawWinner && rawWinner.includes(':')) {
+        const [winnerSlot, reason] = rawWinner.split(':');
+        winner = winnerSlot || null;
+        victoryReason = reason || 'sunk';
+    }
+
     return {
         pin: roomRow.pin,
         status: roomRow.status,
         boardSize: roomRow.board_size,
         turn: roomRow.turn,
-        winner: roomRow.winner,
+        winner,
+        victoryReason,
         player1: {
             id: roomRow.player1_id,
             username: roomRow.player1_name,

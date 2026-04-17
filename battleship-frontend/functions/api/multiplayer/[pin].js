@@ -206,6 +206,10 @@ export async function onRequestPost(context) {
     }
 
     if (action === 'leave') {
+        const opponentSlot = playerSlot === 'player1' ? 'player2' : 'player1';
+        const opponentExists = Boolean(state[opponentSlot]?.id);
+        const winnerValue = opponentExists ? `${opponentSlot}:forfeit` : null;
+
         await env.DB.prepare(
             `UPDATE multiplayer_rooms
              SET status = 'finished',
@@ -215,7 +219,7 @@ export async function onRequestPost(context) {
              WHERE pin = ?`
         )
             .bind(
-                playerSlot === 'player1' ? 'player2' : 'player1',
+                winnerValue,
                 now,
                 now,
                 pin

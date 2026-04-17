@@ -6,44 +6,26 @@ export default function Leaderboard({
     onDeleteEntry,
     devMode
 }) {
-    const [difficultySort, setDifficultySort] = useState('none');
-    const [gridSort, setGridSort] = useState('none');
+    const [difficultyFilter, setDifficultyFilter] = useState('all');
+    const [gridFilter, setGridFilter] = useState('all');
+    const [showFilters, setShowFilters] = useState(false);
     const hasEntries = entries.length > 0;
 
-    const sortedEntries = useMemo(() => {
-        if (!hasEntries || (difficultySort === 'none' && gridSort === 'none')) {
+    const filteredEntries = useMemo(() => {
+        if (!hasEntries) {
             return entries;
         }
 
-        const difficultyRank = {
-            easy: 1,
-            medium: 2,
-            hard: 3,
-            extreme: 4
-        };
+        return entries.filter((entry) => {
+            const entryDifficulty = (entry.difficulty || '').toLowerCase();
+            const entryGrid = String(entry.gridSize || 10);
 
-        return [...entries].sort((a, b) => {
-            if (difficultySort !== 'none') {
-                const diffA = difficultyRank[(a.difficulty || '').toLowerCase()] || Number.MAX_SAFE_INTEGER;
-                const diffB = difficultyRank[(b.difficulty || '').toLowerCase()] || Number.MAX_SAFE_INTEGER;
-                const difficultyDiff = diffA - diffB;
-                if (difficultyDiff !== 0) {
-                    return difficultySort === 'asc' ? difficultyDiff : -difficultyDiff;
-                }
-            }
+            const difficultyMatches = difficultyFilter === 'all' || entryDifficulty === difficultyFilter;
+            const gridMatches = gridFilter === 'all' || entryGrid === gridFilter;
 
-            if (gridSort !== 'none') {
-                const gridA = Number(a.gridSize) || 10;
-                const gridB = Number(b.gridSize) || 10;
-                const gridDiff = gridA - gridB;
-                if (gridDiff !== 0) {
-                    return gridSort === 'asc' ? gridDiff : -gridDiff;
-                }
-            }
-
-            return 0;
+            return difficultyMatches && gridMatches;
         });
-    }, [entries, hasEntries, difficultySort, gridSort]);
+    }, [entries, hasEntries, difficultyFilter, gridFilter]);
 
     const formatDate = (timestamp) => {
         const date = new Date(timestamp);
@@ -79,36 +61,62 @@ export default function Leaderboard({
 
             {hasEntries && (
                 <div className="leaderboard-controls" aria-label="Leaderboard sorting controls">
-                    <div className="leaderboard-control">
-                        <label htmlFor="leaderboard-sort-difficulty">Sort Difficulty</label>
-                        <select
-                            id="leaderboard-sort-difficulty"
-                            value={difficultySort}
-                            onChange={(event) => setDifficultySort(event.target.value)}
-                        >
-                            <option value="none">Default</option>
-                            <option value="asc">Easy to Extreme</option>
-                            <option value="desc">Extreme to Easy</option>
-                        </select>
-                    </div>
-                    <div className="leaderboard-control">
-                        <label htmlFor="leaderboard-sort-grid">Sort Grid</label>
-                        <select
-                            id="leaderboard-sort-grid"
-                            value={gridSort}
-                            onChange={(event) => setGridSort(event.target.value)}
-                        >
-                            <option value="none">Default</option>
-                            <option value="asc">Small to Large</option>
-                            <option value="desc">Large to Small</option>
-                        </select>
-                    </div>
+                    <button
+                        type="button"
+                        className={`leaderboard-filter-toggle ${showFilters ? 'is-active' : ''}`}
+                        onClick={() => setShowFilters((prevValue) => !prevValue)}
+                    >
+                        Filter
+                    </button>
+                    {showFilters && (
+                        <>
+                            <div className="leaderboard-quick-group" role="group" aria-label="Filter by grid size">
+                                <span className="leaderboard-quick-label">Grid</span>
+                                {['all', '8', '10', '12'].map((size) => {
+                                    const isActive = gridFilter === size;
+                                    const label = size === 'all' ? 'All' : `${size}x${size}`;
+
+                                    return (
+                                        <button
+                                            key={`grid-${size}`}
+                                            type="button"
+                                            className={`leaderboard-quick-button ${isActive ? 'is-active' : ''}`}
+                                            onClick={() => setGridFilter(size)}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="leaderboard-quick-group" role="group" aria-label="Filter by difficulty">
+                                <span className="leaderboard-quick-label">Difficulty</span>
+                                {['all', 'easy', 'medium', 'hard', 'extreme'].map((difficulty) => {
+                                    const isActive = difficultyFilter === difficulty;
+
+                                    return (
+                                        <button
+                                            key={`difficulty-${difficulty}`}
+                                            type="button"
+                                            className={`leaderboard-quick-button ${isActive ? 'is-active' : ''}`}
+                                            onClick={() => setDifficultyFilter(difficulty)}
+                                        >
+                                            {difficulty === 'all' ? 'All' : difficulty}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 
             {!hasEntries && <p className="leaderboard-empty">No completed matches yet.</p>}
 
-            {hasEntries && (
+            {hasEntries && filteredEntries.length === 0 && (
+                <p className="leaderboard-empty">No entries match current filters.</p>
+            )}
+
+            {hasEntries && filteredEntries.length > 0 && (
                 <table className="leaderboard-table">
                     <thead>
                         <tr>
@@ -125,7 +133,7 @@ export default function Leaderboard({
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedEntries.map((entry, index) => (
+                        {filteredEntries.map((entry, index) => (
                             <tr key={entry.id} className="leaderboard-row">
                                 <td className={`col-rank ${getRankClass(index)}`}>#{index + 1}</td>
                                 <td className="col-player">{entry.username || 'Anonymous'}</td>
