@@ -3,6 +3,8 @@
     flex-direction: column;
     align-items: center;
     gap: 1.15rem;
+    width: min(100%, 980px);
+    margin: 0 auto;
 
     #header-buttons {
         display: flex;
@@ -112,6 +114,16 @@
                     }
                 }
 
+                &.is-dragging {
+                    .ship-cell {
+                        opacity: 0.35;
+                    }
+
+                    .ship-label {
+                        opacity: 0.8;
+                    }
+                }
+
                 .ship-cell {
                     width: var(--cell-size);
                     height: var(--cell-size);
@@ -126,6 +138,13 @@
 
                 .ship-label {
                     margin: 0 auto;
+                    color: #ffffff;
+                    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
+                    font-weight: 700;
+                    line-height: 1;
+                    letter-spacing: 0;
+                    text-shadow: none;
+                    user-select: none;
                 }
             }
 
@@ -136,6 +155,36 @@
             }
         }
     }
+}
+
+.app-shell.game-active #ships-container {
+    gap: 0.55rem;
+}
+
+.app-shell.game-active #ships-container #ships-row {
+    gap: 0.55rem;
+}
+
+.app-shell.game-active #ships-container #ships-row >div .ship-name {
+    margin-bottom: 0.2rem;
+    font-size: 0.9rem;
+}
+
+.app-shell.game-active #ships-container #ships-row >div .ship-length {
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+}
+
+.app-shell.game-active #ships-container #header-buttons button {
+    font-size: 0.95rem;
+    padding: 0.56rem 0.78rem;
+    min-width: 128px;
+}
+
+.app-shell.game-active .orientation-button-arrow {
+    width: 1.45rem;
+    height: 1.45rem;
+    font-size: 0.84rem;
 }
 
 .orientation-button-arrow {
@@ -173,5 +222,37 @@
 
     #ships-container #header-buttons button {
         min-width: 0;
+    }
+}
+
+@media (max-height: 980px) and (min-width: 900px) {
+    #ships-container {
+        gap: 0.7rem;
+    }
+
+    #ships-container #ships-row {
+        gap: 0.65rem;
+    }
+
+    #ships-container #ships-row > div .ship-name {
+        margin-bottom: 0.28rem;
+        font-size: 0.95rem;
+    }
+
+    #ships-container #ships-row > div .ship-length {
+        margin-top: 0.28rem;
+        font-size: 0.86rem;
+    }
+
+    #ships-container #header-buttons button {
+        font-size: 1rem;
+        padding: 0.62rem 0.88rem;
+        min-width: 138px;
+    }
+
+    .orientation-button-arrow {
+        width: 1.52rem;
+        height: 1.52rem;
+        font-size: 0.92rem;
     }
 }

@@ -6,6 +6,42 @@ p {
     margin-bottom: 1rem;
 }
 
+.setup-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+}
+
+.setup-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.setup-option label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.setup-option select {
+    min-width: 168px;
+    font-size: 1rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    background: rgba(10, 22, 40, 0.55);
+    color: var(--text-primary);
+}
+
+.setup-option select:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
 .game-screen {
     position: relative;
     width: min(100%, 2050px);
@@ -15,10 +51,123 @@ p {
     box-sizing: border-box;
 }
 
+.game-screen.is-setup {
+    padding-top: clamp(0.45rem, 1vw, 0.9rem);
+}
+
+.setup-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.setup-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.setup-board-stage {
+    width: 100%;
+}
+
+.app-shell.game-active .game-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 1900px);
+    padding: clamp(0.45rem, 0.9vw, 0.95rem) clamp(0.55rem, 1.2vw, 1.25rem);
+}
+
+.app-shell.game-active .game-screen.is-setup {
+    padding-top: clamp(0.22rem, 0.5vw, 0.5rem);
+}
+
+.app-shell.game-active .setup-header {
+    margin-bottom: 0.25rem;
+}
+
+.app-shell.game-active .setup-header h2 {
+    margin-bottom: 0.15rem;
+    font-size: clamp(1.75rem, 2.2vw, 2.2rem);
+    line-height: 1;
+}
+
+.app-shell.game-active .setup-header p {
+    margin-bottom: 0.15rem;
+    font-size: clamp(0.9rem, 0.9vw, 1.02rem);
+    line-height: 1.2;
+}
+
+.app-shell.game-active .setup-options {
+    margin-bottom: 0.25rem;
+    gap: 0.45rem;
+}
+
+.app-shell.game-active .game-screen.is-setup {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-shell.game-active .game-screen.is-setup .setup-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 0.25rem;
+    justify-content: center;
+}
+
+.app-shell.game-active .game-screen.is-setup .setup-controls {
+    flex: 0 0 auto;
+    gap: 0.05rem;
+}
+
+.app-shell.game-active .game-screen.is-setup .setup-board-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) {
+    align-items: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) .battle-boards {
+    align-self: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) .battle-marker-legend-row {
+    align-self: center;
+}
+
+.app-shell.game-active .back-to-menu-button {
+    padding: 0.48rem 0.8rem;
+    font-size: 0.9rem;
+}
+
+.setup-header {
+    margin-bottom: 0.65rem;
+}
+
+.setup-header h2 {
+    margin-top: 0;
+    margin-bottom: 0.45rem;
+}
+
+.setup-header p {
+    margin-top: 0;
+    margin-bottom: 0.4rem;
+}
+
 .back-to-menu-button {
     position: absolute;
-    top: clamp(0.4rem, 1vw, 1rem);
-    left: clamp(0.4rem, 1vw, 1rem);
+    top: 0;
+    left: 0;
     z-index: 3;
     display: inline-flex;
     align-items: center;
@@ -60,13 +209,23 @@ p {
 }
 
 .battle-subtitle {
-    margin-bottom: 0.4rem;
+    margin: 0 0 0.2rem;
     color: var(--text-secondary);
+    font-size: clamp(0.9rem, 0.9vw, 1.02rem);
+    line-height: 1.2;
 }
 
 .battle-status {
     font-weight: 600;
-    margin-bottom: 0.25rem;
+    margin: 0 0 0.2rem;
+    font-size: clamp(0.92rem, 0.95vw, 1.06rem);
+    line-height: 1.2;
+}
+
+.battle-header-title {
+    margin: 0 0 0.15rem;
+    font-size: clamp(1.75rem, 2.2vw, 2.2rem);
+    line-height: 1;
 }
 
 .battle-turn {
@@ -74,7 +233,7 @@ p {
     align-items: center;
     gap: 0.45rem;
     color: var(--radar-green);
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
     padding: 0.55rem 1rem;
     border-radius: 999px;
     border: 1px solid rgba(0, 255, 65, 0.28);
@@ -111,6 +270,15 @@ p {
     background: linear-gradient(180deg, rgba(230, 57, 70, 0.25), rgba(171, 28, 40, 0.14));
     border-color: rgba(230, 57, 70, 0.4);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.app-shell.game-active .battle-header-title {
+    margin-bottom: 0.12rem;
+}
+
+.app-shell.game-active .battle-subtitle,
+.app-shell.game-active .battle-status {
+    margin-bottom: 0.12rem;
 }
 
 .win-confetti {
@@ -464,20 +632,46 @@ p {
     justify-content: center;
     align-items: center;
     gap: 0.75rem;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.battle-quit-button {
-    color: #fff5f5;
+.battle-actions .battle-new-button,
+.battle-actions .battle-quit-button {
     border: 2px solid transparent;
     font-size: 1.4rem;
     font-weight: bold;
     padding: 1.05rem 2.2rem;
+    width: 230px;
     min-width: 230px;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: border-color 0.4s ease, background-color 0.3s ease;
     outline: none;
     margin-top: 1rem;
+}
+
+.battle-actions .battle-new-button {
+    background-color: var(--radar-green);
+    color: var(--navy-dark);
+}
+
+.battle-actions .battle-new-button:hover {
+    border-color: var(--gold);
+}
+
+.battle-actions .battle-new-button:focus {
+    border-color: var(--radar-green);
+    outline: none;
+}
+
+.battle-actions .battle-new-button:active {
+    border-color: var(--gold) !important;
+}
+
+.battle-quit-button {
+    color: #fff5f5;
     background-color: #e63946;
 }
 
@@ -779,6 +973,42 @@ p {
 @media (max-width: 1180px) {
     .ships-remaining-panel {
         display: none;
+    }
+}
+
+@media (max-height: 980px) and (min-width: 900px) {
+    .game-screen {
+        padding: clamp(0.45rem, 0.9vw, 0.9rem) clamp(0.55rem, 1.2vw, 1.3rem) clamp(0.6rem, 1.2vw, 1.05rem);
+    }
+
+    .game-screen.is-setup {
+        padding-top: clamp(0.25rem, 0.55vw, 0.55rem);
+    }
+
+    .setup-header {
+        margin-bottom: 0.3rem;
+    }
+
+    .setup-header h2 {
+        font-size: clamp(1.85rem, 2.4vw, 2.35rem);
+        margin-bottom: 0.2rem;
+        line-height: 1;
+    }
+
+    .setup-header p {
+        font-size: clamp(0.95rem, 0.95vw, 1.08rem);
+        margin-bottom: 0.2rem;
+        line-height: 1.25;
+    }
+
+    .setup-options {
+        margin-bottom: 0.4rem;
+        gap: 0.5rem;
+    }
+
+    .back-to-menu-button {
+        padding: 0.54rem 0.88rem;
+        font-size: 0.95rem;
     }
 }
 

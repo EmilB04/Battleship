@@ -103,8 +103,18 @@ function App() {
     return cleanup;
   }, []);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('game-active', gameStarted);
+    document.body.classList.toggle('game-active', gameStarted);
+
+    return () => {
+      document.documentElement.classList.remove('game-active');
+      document.body.classList.remove('game-active');
+    };
+  }, [gameStarted]);
+
   return (
-    <>
+    <div className={`app-shell ${gameStarted ? 'game-active' : ''}`}>
       {gameStarted ? (
         <GameScreen GoBack={() => {
           setGameStarted(false);
@@ -121,8 +131,8 @@ function App() {
           devMode={devMode}
         />
       )}
-      <Footer />
-    </>
+      {!gameStarted && <Footer />}
+    </div>
   )
 }
 

@@ -4,3 +4,42 @@
     justify-content: space-between;
     gap: clamp(1rem, 2vh, 1.75rem);
 }
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.8rem, 1.6vh, 1.4rem);
+    min-height: 100%;
+}
+
+.app-shell.game-active {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    gap: 0;
+}
+
+.app-shell.game-active .game-screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 899px) {
+    .app-shell.game-active {
+        height: auto;
+        min-height: 100%;
+        max-height: none;
+        overflow: visible;
+        gap: clamp(0.8rem, 1.6vh, 1.4rem);
+    }
+
+    .app-shell.game-active .game-screen {
+        flex: 0 0 auto;
+        min-height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+}

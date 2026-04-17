@@ -14,6 +14,52 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
     const handleDragStart = (e, ship) => {
         setSelectedShip(ship);
         e.dataTransfer.effectAllowed = 'move';
+
+        // Keep the dragged ship semi-transparent for better visibility over the board.
+        e.currentTarget.classList.add('is-dragging');
+
+        const dragPreview = document.createElement('div');
+        dragPreview.style.display = 'flex';
+        dragPreview.style.flexDirection = orientation === 'vertical' ? 'column' : 'row';
+        dragPreview.style.gap = '2px';
+        dragPreview.style.opacity = '0.38';
+        dragPreview.style.pointerEvents = 'none';
+        dragPreview.style.position = 'absolute';
+        dragPreview.style.top = '-9999px';
+        dragPreview.style.left = '-9999px';
+
+        const sampleCell = e.currentTarget.querySelector('.ship-cell');
+        const computedCell = sampleCell ? window.getComputedStyle(sampleCell) : null;
+        const cellWidth = computedCell?.width || '30px';
+        const cellHeight = computedCell?.height || '30px';
+        const cellBorderRadius = computedCell?.borderRadius || '6px';
+        const cellBorder = computedCell?.border || '1px solid rgba(0, 0, 0, 0.25)';
+
+        for (let i = 0; i < ship.length; i += 1) {
+            const cell = document.createElement('div');
+            cell.style.width = cellWidth;
+            cell.style.height = cellHeight;
+            cell.style.borderRadius = cellBorderRadius;
+            cell.style.border = cellBorder;
+            cell.style.backgroundColor = ship.color;
+            dragPreview.appendChild(cell);
+        }
+
+        document.body.appendChild(dragPreview);
+
+        const previewWidth = dragPreview.offsetWidth || 24;
+        const previewHeight = dragPreview.offsetHeight || 24;
+        e.dataTransfer.setDragImage(dragPreview, previewWidth / 2, previewHeight / 2);
+
+        window.setTimeout(() => {
+            if (dragPreview.parentNode) {
+                dragPreview.parentNode.removeChild(dragPreview);
+            }
+        }, 0);
+    };
+
+    const handleDragEnd = (e) => {
+        e.currentTarget.classList.remove('is-dragging');
     };
 
     return (
@@ -29,9 +75,10 @@ export default function Ships({ selectedShip, setSelectedShip, orientation, setO
                     >
                         <div className="ship-name">{ship.name}</div>
                         <div 
-                            className={`ship-preview ${orientation}`}
+                            className="ship-preview"
                             draggable={!isShipPlaced(ship.id)}
                             onDragStart={(e) => !isShipPlaced(ship.id) && handleDragStart(e, ship)}
+                            onDragEnd={handleDragEnd}
                         >
                             {[...Array(ship.length)].map((_, index) => (
                                 <div 
