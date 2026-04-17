@@ -7,7 +7,7 @@ import BattleMarkerLegend from './BattleMarkerLegend';
 import { SHIP_TEMPLATES } from '../constants/gameConstants';
 import { buildShipMap, getSunkShipIds } from '../utils/shipUtils';
 import { getCellKey } from '../utils/cellUtils';
-import { createMultiplayerRoomStream, fetchMultiplayerRoom, fireMultiplayerShot, leaveMultiplayerRoom, placeMultiplayerFleet, requestMultiplayerRematch } from '../utils/multiplayerApi';
+import { createMultiplayerRoomStream, fetchMultiplayerRoom, fireMultiplayerShot, leaveMultiplayerRoom, placeMultiplayerFleet, requestMultiplayerRematch, declineMultiplayerRematch } from '../utils/multiplayerApi';
 import { clearMultiplayerSession, saveMultiplayerSession } from '../utils/multiplayerSession';
 
 const FAST_POLL_INTERVAL_MS = 650;
@@ -359,6 +359,45 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         }
     }, [pin, playerId, isRequestingRematch, winner]);
 
+    const handleAcceptRematch = useCallback(async () => {
+        if (!pin || !playerId || isRequestingRematch || !winner) {
+            return;
+        }
+
+        setIsRequestingRematch(true);
+        setErrorText('');
+
+        try {
+            const result = await requestMultiplayerRematch({ pin, playerId });
+            setRoom(result.room);
+            setSetupSubmitted(false);
+            setSetupShips([]);
+            setSelectedShip(null);
+        } catch (error) {
+            setErrorText(String(error?.message || error));
+        } finally {
+            setIsRequestingRematch(false);
+        }
+    }, [pin, playerId, isRequestingRematch, winner]);
+
+    const handleDeclineRematch = useCallback(async () => {
+        if (!pin || !playerId || isRequestingRematch || !winner) {
+            return;
+        }
+
+        setIsRequestingRematch(true);
+        setErrorText('');
+
+        try {
+            const result = await declineMultiplayerRematch({ pin, playerId });
+            setRoom(result.room);
+        } catch (error) {
+            setErrorText(String(error?.message || error));
+        } finally {
+            setIsRequestingRematch(false);
+        }
+    }, [pin, playerId, isRequestingRematch, winner]);
+
     const rematchStatusText = useMemo(() => {
         if (!winner) {
             return '';
@@ -488,14 +527,44 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
                     )}
 
                     {winner && (
-                        <div className="battle-marker-legend-row">
-                            <button
-                                className="battle-new-button"
-                                onClick={handleRequestRematch}
-                                disabled={isRequestingRematch || myRematchReady}
-                            >
-                                {myRematchReady ? 'Rematch Requested' : (isRequestingRematch ? 'Requesting...' : 'Request Rematch')}
-                            </button>
+                        <div className="battle-rematch-section">
+                            {!myRematchReady && !enemyRematchReady && (
+                                <button
+                                    className="battle-new-button"
+                                    onClick={handleRequestRematch}
+                                    disabled={isRequestingRematch}
+                                >
+                                    {isRequestingRematch ? 'Requesting...' : 'Request Rematch'}
+                                </button>
+                            )}
+                            {myRematchReady && !enemyRematchReady && (
+                                <button className="battle-new-button" disabled>
+                                    Rematch Requested
+                                </button>
+                            )}
+                            {!myRematchReady && enemyRematchReady && (
+                                <div className="rematch-button-group">
+                                    <button
+                                        className="battle-new-button"
+                                        onClick={handleAcceptRematch}
+                                        disabled={isRequestingRematch}
+                                    >
+                                        {isRequestingRematch ? 'Accepting...' : 'Accept Rematch'}
+                                    </button>
+                                    <button
+                                        className="battle-quit-button"
+                                        onClick={handleDeclineRematch}
+                                        disabled={isRequestingRematch}
+                                    >
+                                        Decline
+                                    </button>
+                                </div>
+                            )}
+                            {myRematchReady && enemyRematchReady && (
+                                <button className="battle-new-button" disabled>
+                                    Both Accepted
+                                </button>
+                            )}
                             <p className="battle-subtitle">{rematchStatusText}</p>
                         </div>
                     )}

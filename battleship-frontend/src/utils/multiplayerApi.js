@@ -155,6 +155,22 @@ export const requestMultiplayerRematch = async ({ pin, playerId }) => {
     return { ...data, source };
 };
 
+export const declineMultiplayerRematch = async ({ pin, playerId }) => {
+    const { data, source } = await requestWithFallback(`/${encodeURIComponent(pin)}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'declineRematch',
+            playerId
+        })
+    });
+
+    return { ...data, source };
+};
+
 export const resumeMultiplayerSession = async ({ pin, playerId }) => {
     const { data, source } = await requestWithFallback(`/${encodeURIComponent(pin)}?playerId=${encodeURIComponent(playerId)}`, {
         method: 'GET',

@@ -281,5 +281,30 @@ export async function onRequestPost(context) {
         return createJsonResponse({ room: formatRoomState(latestRoom) }, 200);
     }
 
+    if (action === 'declineRematch') {
+        if (!rematchSupported) {
+            return createJsonResponse({ error: 'Rematch requires migration 0003_add_multiplayer_rematch_flags.sql to be applied.' }, 409);
+        }
+
+        if (state.status !== 'finished') {
+            return createJsonResponse({ error: 'Rematch is only available after the game ends.' }, 409);
+        }
+
+        const rematchColumn = playerSlot === 'player1' ? 'player1_rematch_ready' : 'player2_rematch_ready';
+
+        await env.DB.prepare(
+            `UPDATE multiplayer_rooms
+             SET ${rematchColumn} = 0,
+                 updated_at = ?,
+                 expires_at = ?
+             WHERE pin = ?`
+        )
+            .bind(now, nextExpiry, pin)
+            .run();
+
+        const updatedRoom = await getRoomByPin(env.DB, pin);
+        return createJsonResponse({ room: formatRoomState(updatedRoom) }, 200);
+    }
+
     return createJsonResponse({ error: 'Unsupported action.' }, 400);
 }
