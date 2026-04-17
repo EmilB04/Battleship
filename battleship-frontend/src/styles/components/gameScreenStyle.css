@@ -109,8 +109,10 @@ p {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .app-shell.game-active .game-screen.is-setup .setup-stage {
@@ -228,6 +230,18 @@ p {
     line-height: 1;
 }
 
+.multiplayer-room-pin-highlight {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.08rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 183, 3, 0.5);
+    background: rgba(255, 183, 3, 0.16);
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    font-weight: 900;
+}
+
 .battle-turn {
     display: inline-flex;
     align-items: center;
@@ -248,8 +262,8 @@ p {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.7rem 1.05rem;
-    margin-bottom: 1rem;
+    padding: 0.5rem 0.9rem;
+    margin-bottom: 0;
     border-radius: 12px;
     font-size: clamp(1.2rem, 2.5vw, 1.6rem);
     font-weight: 800;
@@ -350,6 +364,29 @@ p {
     display: flex;
     justify-content: center;
     margin-top: 0.35rem;
+}
+
+.battle-rematch-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+    width: 100%;
+}
+
+.rematch-button-group {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.battle-rematch-section .battle-new-button {
+    background-color: var(--radar-green);
+    color: var(--navy-dark);
 }
 
 .battle-marker-legend {
@@ -689,12 +726,13 @@ p {
 }
 
 .leaderboard {
-    margin: 1.5rem auto 0;
-    width: min(100%, 1450px);
+    width: calc(100% - 4vw);
+    margin: 0 auto;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--steel-blue);
     border-radius: var(--border-radius);
-    padding: clamp(0.8rem, 1.5vw, 1.2rem);
+    padding: clamp(0.8rem, 1.6vw, 1.2rem);
     overflow-x: auto;
 }
 
@@ -741,6 +779,60 @@ p {
     align-items: center;
     gap: 0.75rem;
     margin: 0 0 0.85rem;
+}
+
+.leaderboard-filter-toggle {
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 183, 3, 0.45);
+    background: rgba(255, 183, 3, 0.14);
+    color: var(--gold);
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+}
+
+.leaderboard-filter-toggle.is-active {
+    background: rgba(255, 183, 3, 0.24);
+    border-color: rgba(255, 183, 3, 0.75);
+}
+
+.leaderboard-quick-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    flex-wrap: wrap;
+}
+
+.leaderboard-quick-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-right: 0.1rem;
+}
+
+.leaderboard-quick-button {
+    padding: 0.34rem 0.64rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    background: rgba(10, 22, 40, 0.56);
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.leaderboard-quick-button:hover {
+    border-color: var(--gold);
+}
+
+.leaderboard-quick-button.is-active {
+    background: rgba(255, 183, 3, 0.22);
+    border-color: rgba(255, 183, 3, 0.75);
+    color: #ffe9b8;
 }
 
 .leaderboard-control {

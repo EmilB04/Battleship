@@ -10,12 +10,13 @@ import {
   createLeaderboardEntryRemote,
   deleteLeaderboardEntryRemote,
   fetchLeaderboardEntries,
-  normalizeLeaderboardEntries,
 } from './utils/leaderboardApi';
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsername] = useState('');
+  const [gameMode, setGameMode] = useState('singleplayer');
+  const [multiplayerSession, setMultiplayerSession] = useState(null);
   const [devMode, setDevMode] = useState(() => initializeDevMode());
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardStatus, setLeaderboardStatus] = useState({ text: '', level: '' });
@@ -42,12 +43,10 @@ function App() {
 
   const persistLeaderboard = useCallback((entry) => {
     createLeaderboardEntryRemote(entry)
-      .then(({ entry: savedEntry, source }) => {
+      .then(async ({ source }) => {
         setStatusFromSource(source);
-        setLeaderboard((prevEntries) => {
-          const withoutDuplicate = prevEntries.filter((item) => item.id !== savedEntry.id);
-          return normalizeLeaderboardEntries([savedEntry, ...withoutDuplicate]);
-        });
+        const { entries } = await fetchLeaderboardEntries();
+        setLeaderboard(entries);
       })
       .catch((error) => {
         console.error('Failed to persist leaderboard entry:', error);
@@ -119,10 +118,14 @@ function App() {
         <GameScreen GoBack={() => {
           setGameStarted(false);
           setUsername('');
-        }} persistLeaderboard={persistLeaderboard} username={username} />
+          setGameMode('singleplayer');
+          setMultiplayerSession(null);
+        }} persistLeaderboard={persistLeaderboard} username={username} gameMode={gameMode} multiplayerSession={multiplayerSession} />
       ) : (
-        <StartScreen StartGame={(inputUsername) => {
+        <StartScreen StartGame={(inputUsername, options = {}) => {
           setUsername(inputUsername);
+          setGameMode(options.mode || 'singleplayer');
+          setMultiplayerSession(options.session || null);
           setGameStarted(true);
         }}
           leaderboard={leaderboard}

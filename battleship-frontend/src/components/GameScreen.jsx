@@ -6,6 +6,7 @@ import BattleBoard from './BattleBoard';
 import BattleActions from './BattleActions';
 import PlayerSummary from './PlayerSummary';
 import BattleMarkerLegend from './BattleMarkerLegend';
+import MultiplayerGameScreen from './MultiplayerGameScreen';
 import '../styles/components/gameScreenStyle.css';
 
 // Constants
@@ -22,7 +23,15 @@ import { getAIShot } from '../utils/aiStrategies';
  * Main game interface for Battleship game
  * Manages game state, player input, and AI opponent
  */
-export default function GameScreen({ GoBack, persistLeaderboard, username }) {
+export default function GameScreen({ GoBack, persistLeaderboard, username, gameMode = 'singleplayer', multiplayerSession = null }) {
+    if (gameMode === 'multiplayer') {
+        return <MultiplayerGameScreen GoBack={GoBack} session={multiplayerSession} username={username} />;
+    }
+
+    return <SingleplayerGameScreen GoBack={GoBack} persistLeaderboard={persistLeaderboard} username={username} />;
+}
+
+function SingleplayerGameScreen({ GoBack, persistLeaderboard, username }) {
     // Game state
     const [boardSize, setBoardSize] = useState(() => parseInt(localStorage.getItem(GRID_SIZE_STORAGE_KEY) || '10', 10));
     const [difficulty, setDifficulty] = useState(() => localStorage.getItem(DIFFICULTY_STORAGE_KEY) || 'medium');
@@ -303,11 +312,15 @@ export default function GameScreen({ GoBack, persistLeaderboard, username }) {
         setDifficulty(event.target.value);
     }, []);
 
+    const isSingleplayerInProgress = !setup && !winner;
+    const backButtonLabel = isSingleplayerInProgress ? 'Forfeit' : 'Back to Menu';
+    const backButtonTitle = isSingleplayerInProgress ? 'Forfeit this battle and return to the main menu' : 'Return to the main menu';
+
     return (
         <section className={`game-screen ${setup ? 'is-setup' : ''}`}>
-            <button className="back-to-menu-button" onClick={handleBackToMenu} title="Return to the main menu">
+            <button className="back-to-menu-button" onClick={handleBackToMenu} title={backButtonTitle}>
                 <span className="back-arrow-icon" aria-hidden="true">←</span>
-                <span>Back to Menu</span>
+                <span>{backButtonLabel}</span>
             </button>
 
             {setup && (
