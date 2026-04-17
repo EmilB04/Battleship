@@ -260,9 +260,11 @@ export async function onRequestPost(context) {
 
             await env.DB.prepare(
                 `UPDATE multiplayer_rooms
-                 SET status = 'playing',
+                 SET status = 'waiting',
                      winner = NULL,
-                     turn = 'player1',
+                     turn = NULL,
+                     player1_fleet_json = NULL,
+                     player2_fleet_json = NULL,
                      player1_shots_json = ?,
                      player2_shots_json = ?,
                      player1_rematch_ready = 0,

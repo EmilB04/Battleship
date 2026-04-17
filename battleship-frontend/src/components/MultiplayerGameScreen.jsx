@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Board from './Board';
 import Ships from './Ships';
 import BattleStatus from './BattleStatus';
@@ -28,6 +28,7 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
     const [isWindowVisible, setIsWindowVisible] = useState(() => {
         return typeof document === 'undefined' ? true : !document.hidden;
     });
+    const previousRoomStatusRef = useRef(room?.status || null);
 
     const playerId = session?.playerId;
     const pin = session?.pin;
@@ -248,6 +249,20 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
     }, [isWindowVisible, room?.status, isMyTurn]);
 
     useEffect(() => {
+        const previousStatus = previousRoomStatusRef.current;
+        previousRoomStatusRef.current = room?.status || null;
+
+        if (previousStatus === 'finished' && room?.status === 'waiting' && !hasPlacedFleet) {
+            setSetupSubmitted(false);
+            setSetupShips([]);
+            setSelectedShip(null);
+            setOrientation('horizontal');
+            setIsRequestingRematch(false);
+            setErrorText('');
+        }
+    }, [room?.status, hasPlacedFleet]);
+
+    useEffect(() => {
         if (!pin || !playerId || streamConnected) {
             return undefined;
         }
@@ -350,7 +365,7 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         }
 
         if (myRematchReady && enemyRematchReady) {
-            return 'Both players accepted rematch. Resetting battle...';
+            return 'Both players accepted rematch. Place your ships again.';
         }
 
         if (myRematchReady) {
@@ -358,7 +373,7 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         }
 
         if (enemyRematchReady) {
-            return 'Opponent requested a rematch.';
+            return 'Opponent requested a rematch. Accept to start another match.';
         }
 
         return 'Want another round in the same room?';
@@ -436,7 +451,7 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
 
             {matchStarted && (
                 <>
-                    <div className={`battle-boards ${winner ? 'has-summary' : 'is-compact'}`}>
+                    <div className={`battle-boards ${winner ? 'is-compact' : 'is-compact'}`}>
                         <BattleBoard
                             boardType="player"
                             columnLabels={columnLabels}
