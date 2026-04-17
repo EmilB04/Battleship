@@ -384,6 +384,11 @@ p {
     flex-wrap: wrap;
 }
 
+.battle-rematch-section .battle-new-button {
+    background-color: var(--radar-green);
+    color: var(--navy-dark);
+}
+
 .battle-marker-legend {
     display: flex;
     flex-direction: row;
