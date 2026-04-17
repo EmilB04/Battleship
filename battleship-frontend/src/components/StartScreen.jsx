@@ -1,5 +1,6 @@
 import '../styles/components/startScreenStyle.css';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { FaUser, FaUsers } from 'react-icons/fa';
 import HowToPlayScreen from './HowToPlayScreen';
 import SettingsScreen from './SettingsScreen';
 import Leaderboard from './Leaderboard';
@@ -107,7 +108,7 @@ export default function StartScreen({
         }
     };
 
-    const handleGlobalEscape = useCallback(() => {
+    const handleGlobalEscape = () => {
         if (showUsernamePrompt && !isUsernamePromptClosing) {
             handleCloseUsernamePrompt();
             return;
@@ -121,17 +122,7 @@ export default function StartScreen({
         if (showHowToPlay && !isHowToPlayClosing) {
             handleCloseHowToPlay();
         }
-    }, [
-        showUsernamePrompt,
-        isUsernamePromptClosing,
-        showSettings,
-        isSettingsClosing,
-        showHowToPlay,
-        isHowToPlayClosing,
-        handleCloseUsernamePrompt,
-        handleCloseSettings,
-        handleCloseHowToPlay
-    ]);
+    };
 
     useGlobalEscape(handleGlobalEscape, showUsernamePrompt || showSettings || showHowToPlay);
 
@@ -141,7 +132,21 @@ export default function StartScreen({
                 <h1>Battleship</h1>
                 <ul className='game-options'>
                     <li>
-                        <button className="start-button" onClick={handleStartClick}>Start Game</button>
+                        <button className="start-button" onClick={handleStartClick}>
+                            <FaUser className="start-mode-icon" aria-hidden="true" focusable="false" />
+                            <span>Singleplayer</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            className="start-button"
+                            disabled
+                            title="Multiplayer is coming soon"
+                            aria-label="Multiplayer coming soon"
+                        >
+                            <FaUsers className="start-mode-icon" aria-hidden="true" focusable="false" />
+                            <span>Multiplayer (Coming Soon)</span>
+                        </button>
                     </li>
                     <li>
                         <button className="how-to-play" onClick={handleOpenHowToPlay}>How to Play</button>

@@ -72,6 +72,10 @@ p {
 }
 
 .app-shell.game-active .game-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: min(100%, 1900px);
     padding: clamp(0.45rem, 0.9vw, 0.95rem) clamp(0.55rem, 1.2vw, 1.25rem);
 }
@@ -105,12 +109,15 @@ p {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    justify-content: center;
+    align-items: center;
 }
 
 .app-shell.game-active .game-screen.is-setup .setup-stage {
     flex: 1 1 auto;
     min-height: 0;
     gap: 0.25rem;
+    justify-content: center;
 }
 
 .app-shell.game-active .game-screen.is-setup .setup-controls {
@@ -122,8 +129,20 @@ p {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) {
+    align-items: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) .battle-boards {
+    align-self: center;
+}
+
+.app-shell.game-active .game-screen:not(.is-setup) .battle-marker-legend-row {
+    align-self: center;
 }
 
 .app-shell.game-active .back-to-menu-button {
