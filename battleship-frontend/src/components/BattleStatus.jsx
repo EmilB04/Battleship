@@ -18,7 +18,7 @@ export default function BattleStatus({
             {winner === 'player' && <WinConfetti />}
             <h2 className="battle-header-title">{headerTitle}</h2>
             <p className="battle-subtitle"><strong>{resolvedSubtitle}</strong></p>
-            <p className="battle-status">{statusText}</p>
+            {statusText && <p className="battle-status">{statusText}</p>}
             {!winner && showTurn && <p className="battle-turn">Turn: {resolvedTurnLabel}</p>}
             {winner && (
                 <p className={`battle-winner ${winner === 'player' ? 'winner-player' : 'winner-bot'}`}>

@@ -364,6 +364,13 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
         return 'Want another round in the same room?';
     }, [winner, myRematchReady, enemyRematchReady]);
 
+    const shouldHideHeaderStatus = hasPlacedFleet && !matchStarted;
+    const isMatchOngoing = matchStarted && !winner;
+    const shouldShowReconnectSuffix = !streamConnected && !isMatchOngoing;
+    const headerStatusText = shouldHideHeaderStatus
+        ? ''
+        : `${statusText}${shouldShowReconnectSuffix ? ' (Reconnecting...)' : ''}`;
+
     const isMultiplayerInProgress = room?.status === 'playing' && !winner;
     const backButtonLabel = isMultiplayerInProgress ? 'Forfeit' : 'Back to Menu';
     const backButtonTitle = isMultiplayerInProgress ? 'Forfeit this multiplayer battle and return to the main menu' : 'Return to the main menu';
@@ -377,7 +384,7 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
 
             <BattleStatus
                 difficulty="pvp"
-                statusText={`${statusText}${streamConnected ? '' : ' (Reconnecting...)'}`}
+                statusText={headerStatusText}
                 turn={isMyTurn ? 'player' : 'bot'}
                 winner={winner}
                 headerTitle={(
@@ -396,10 +403,6 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
             {!hasPlacedFleet && (
                 <div className="setup-stage">
                     <div className="setup-controls">
-                        <div className="setup-header">
-                            <h2>Place Your Ships</h2>
-                            <p>Room PIN: <strong>{room?.pin || pin}</strong>. Place ships and lock in your fleet.</p>
-                        </div>
                         <Ships
                             selectedShip={selectedShip}
                             setSelectedShip={setSelectedShip}
@@ -428,7 +431,6 @@ export default function MultiplayerGameScreen({ GoBack, session, username }) {
                     <p className="battle-status">
                         {setupSubmitted ? 'Fleet locked in.' : 'Fleet ready.'} Waiting for both players to finish setup.
                     </p>
-                    <p className="battle-subtitle">Room PIN: <strong>{room?.pin || pin}</strong></p>
                 </div>
             )}
 
