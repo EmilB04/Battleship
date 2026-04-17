@@ -209,6 +209,57 @@
     border-color: #c41c3b;
 }
 
+.multiplayer-modal {
+    gap: 0.85rem;
+}
+
+.multiplayer-mode-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+}
+
+.multiplayer-mode-button {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--steel-blue);
+    border-radius: 6px;
+    background: rgba(15, 30, 50, 0.9);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.multiplayer-mode-button.is-active {
+    background: var(--radar-green);
+    border-color: var(--radar-green);
+    color: #ffffff;
+}
+
+.multiplayer-board-size {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.multiplayer-board-size select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 2px solid var(--steel-blue);
+    border-radius: 4px;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.multiplayer-error {
+    margin: 0;
+    color: #ff9aa7;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
 /* Developer Mode Indicator */
 .dev-mode-indicator {
     position: fixed;

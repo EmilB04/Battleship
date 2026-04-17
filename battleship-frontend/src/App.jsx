@@ -16,6 +16,8 @@ import {
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [username, setUsername] = useState('');
+  const [gameMode, setGameMode] = useState('singleplayer');
+  const [multiplayerSession, setMultiplayerSession] = useState(null);
   const [devMode, setDevMode] = useState(() => initializeDevMode());
   const [leaderboard, setLeaderboard] = useState([]);
   const [leaderboardStatus, setLeaderboardStatus] = useState({ text: '', level: '' });
@@ -119,10 +121,14 @@ function App() {
         <GameScreen GoBack={() => {
           setGameStarted(false);
           setUsername('');
-        }} persistLeaderboard={persistLeaderboard} username={username} />
+          setGameMode('singleplayer');
+          setMultiplayerSession(null);
+        }} persistLeaderboard={persistLeaderboard} username={username} gameMode={gameMode} multiplayerSession={multiplayerSession} />
       ) : (
-        <StartScreen StartGame={(inputUsername) => {
+        <StartScreen StartGame={(inputUsername, options = {}) => {
           setUsername(inputUsername);
+          setGameMode(options.mode || 'singleplayer');
+          setMultiplayerSession(options.session || null);
           setGameStarted(true);
         }}
           leaderboard={leaderboard}
